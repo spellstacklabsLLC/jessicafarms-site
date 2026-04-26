@@ -26,7 +26,6 @@ function getStripe() {
 async function startServer() {
   const app = express();
   const PORT = process.env.PORT || 3000;
-  
   app.use(express.json());
   
   // Restrict CORS in production for better security
@@ -129,7 +128,8 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-    app.get("*", (req, res) => {
+    
+    app.get("/*splat", (req, res) => {     
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
