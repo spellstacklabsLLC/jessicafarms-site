@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jessica Farms | Norton, Ohio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Outfit:wght@300;400;500;600;700;800&family=Special+Elite&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: '#1a4332',
+            honey: '#d9a520',
+            cream: '#fdfcf8',
+          },
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            farmhouse: ['Pacifico', 'cursive'],
+            typewriter: ['Special Elite', 'system-ui'],
+            serif: ['Playfair Display', 'serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --farm-forest: #1a4332;
+      --honey-life: #d9a520;
+      --cream-base: #fdfcf8;
+      --paper-white: #ffffff;
+    }
+
+    body {
+      background-color: var(--cream-base);
+      color: var(--farm-forest);
+      background-image: radial-gradient(rgba(26, 67, 50, 0.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .font-serif-modern { font-family: 'Playfair Display', serif; }
+
+    /* Tilt Animation */
+    .tilt-hover {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .tilt-hover:hover {
+      transform: scale(1.05) rotate(3deg);
+    }
+
+    /* Clean Borders */
+    .clean-border {
+      border: 2px solid var(--farm-forest);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .nav-link-active {
+      background-color: var(--farm-forest);
+      color: white !important;
+      transform: scale(1.05) rotate(-2deg);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--cream-base); }
+    ::-webkit-scrollbar-thumb { background: var(--farm-forest); border-radius: 10px; }
+
+    .btn-honey {
+      background-color: var(--honey-life);
+      color: white;
+      border: 2px solid var(--farm-forest);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .btn-honey:hover {
+      background-color: #c4951b;
+      transform: translateY(-4px) rotate(-2deg);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.4",
+    "path": "https://esm.sh/path@^0.12.7"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="antialiased">
+  <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
