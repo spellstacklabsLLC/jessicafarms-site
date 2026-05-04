@@ -118,12 +118,7 @@ const App: React.FC = () => {
                    (e.target as HTMLImageElement).style.opacity = '0';
                  }} 
                />
-               <img 
-                 src="https://picsum.photos/seed/jessicafarms-logo/200/200" 
-                 alt="Farm Placeholder" 
-                 className="absolute inset-0 w-full h-full object-cover opacity-40 z-0" 
-                 referrerPolicy="no-referrer" 
-               />
+          
             </div>
             <div>
               <h1 className="text-2xl font-black uppercase tracking-tighter leading-none text-forest">Jessica Farms</h1>
