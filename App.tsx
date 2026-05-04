@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Page, Product, CartItem } from './types';
 import { PRODUCTS, INTRO_VIDEO, CONFIG } from './constants';
@@ -74,7 +73,7 @@ const App: React.FC = () => {
 
       {/* STRIPE NOTIFICATIONS */}
       {orderComplete && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-6 animate-in slide-in-from-top-10 duration-500">
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] w-full max-w-md px-6 animate-in slide-in-from-top-10 duration-500">
           <div className="bg-forest text-white p-6 rounded-[2rem] shadow-2xl border-4 border-white flex items-center gap-6">
             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl">🍯</div>
             <div className="flex-1">
@@ -87,7 +86,7 @@ const App: React.FC = () => {
       )}
 
       {orderCanceled && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-6 animate-in slide-in-from-top-10 duration-500">
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] w-full max-w-md px-6 animate-in slide-in-from-top-10 duration-500">
           <div className="bg-red-600 text-white p-6 rounded-[2rem] shadow-2xl border-4 border-white flex items-center gap-6">
             <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl">🐝</div>
             <div className="flex-1">
@@ -100,7 +99,7 @@ const App: React.FC = () => {
       )}
 
       {/* CLEAN NAV BAR */}
-      <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${isScrolled || mobileMenuOpen ? 'py-3 bg-white/90 backdrop-blur-md shadow-sm border-b border-forest/10' : 'py-6 bg-transparent'}`}>
+      <header className={`fixed top-0 w-full z-[100] transition-all duration-500 ${isScrolled || mobileMenuOpen ? 'py-3 bg-white/90 backdrop-blur-md shadow-sm border-b border-forest/10' : 'py-6 bg-transparent'}`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <div 
             onClick={() => {
@@ -154,7 +153,7 @@ const App: React.FC = () => {
             fixed lg:static top-[88px] left-0 w-full lg:w-auto 
             bg-white lg:bg-transparent p-6 lg:p-0 border-b lg:border-0 border-forest/10
             flex flex-col lg:flex-row items-stretch lg:items-center gap-3 lg:gap-4
-            transition-all duration-300 transform
+            transition-all duration-300 transform z-[100]
             ${mobileMenuOpen ? 'translate-y-0 opacity-100 visible' : '-translate-y-4 opacity-0 invisible lg:translate-y-0 lg:visible lg:opacity-100'}
           `}>
             <NavLink page={Page.Farm} label="Farm" emoji="🏠" />
@@ -185,7 +184,7 @@ const App: React.FC = () => {
                     The Honey <br/> Life.
                   </h2>
                   <p className="text-2xl font-medium leading-relaxed text-stone-500 font-serif-modern italic">
-                    "raising bees, koi, and healthy plants win our corner of Ohio."
+                    "raising bees, koi, and healthy plants with heart in our corner of Ohio."
                   </p>
                   <div className="flex flex-wrap gap-4 pt-4">
                     {CONFIG.enableStore && (
@@ -206,7 +205,7 @@ const App: React.FC = () => {
                     <h3 className="text-4xl font-black uppercase tracking-tighter italic text-forest">Norton Apiary</h3>
                   </div>
                   <p className="text-2xl text-stone-600 font-serif-modern leading-relaxed italic">
-                  Our bees forage on local wildflowers, producing raw honey right here in Norton, Ohio..
+                    Our bees forage on local wildflowers, producing raw honey that captures the essence of our hometown.
                   </p>
                 </div>
                 <div className="relative group tilt-hover cursor-pointer">
@@ -224,7 +223,7 @@ const App: React.FC = () => {
                     <h3 className="text-4xl font-black uppercase tracking-tighter italic text-forest">Ornamental Koi</h3>
                   </div>
                   <p className="text-2xl text-stone-600 font-serif-modern leading-relaxed italic">
-                  Grown in natural ponds, carefully raised and hand-selected over time.
+                    Transform your pond into a sanctuary with our vibrant, healthy, hand-selected varieties.
                   </p>
                   {CONFIG.enableStore && (
                     <button onClick={()=>setCurrentPage(Page.Shop)} className="btn-honey px-8 py-4 rounded-xl text-[10px] text-white font-black uppercase">View Selection</button>
@@ -359,7 +358,7 @@ const App: React.FC = () => {
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
-                { title: "Bernie in the Woods", emoji: "🐺", desc: "Quiet forest walks, eerie moments, and daily adventures with our dog Bernie." },
+                { title: "Bernie in the Woods", emoji: "🐺", desc: "Quiet forest walks, eerie moments, and daily adventures with our rescue dog." },
                 { title: "Impossible Machines", emoji: "🚜", desc: "Hyper-real farm machines that process things a little too far. Surreal mechanics." },
                 { title: "Farmyard Friends", emoji: "🐱", desc: "Small, peaceful moments from an imagined farm world centered on our real animals." },
                 { title: "The Cat World", emoji: "🎶", desc: "Original music films and animated stories set in a surreal cat universe." },

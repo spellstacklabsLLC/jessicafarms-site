@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import { getEnvVar } from '../env';
@@ -68,7 +67,7 @@ const InquiryModal: React.FC<InquiryModalProps> = ({ product, onClose }) => {
   if (!product && status !== 'sent' && status !== 'error') return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-forest/40 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-forest/40 backdrop-blur-sm animate-in fade-in duration-300">
       <div 
         className="relative bg-cream w-full max-w-lg rounded-[3rem] border-8 border-white shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-10 duration-500"
       >

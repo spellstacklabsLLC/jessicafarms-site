@@ -309,8 +309,9 @@ const BeeBlaster: React.FC = () => {
   // --- CONTROLS ---
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent scrolling for game controls
-      if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      // Prevent scrolling for game controls only when game is active or highscore entry
+      if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key) && 
+          ['PLAYING', 'HIGHSCORE_ENTRY'].includes(gameState)) {
         e.preventDefault();
       }
       
@@ -373,25 +374,55 @@ const BeeBlaster: React.FC = () => {
     };
   }, [gameState, activeInitialIndex, initials]);
 
-  // Resize canvas
-  useEffect(() => {
-    const handleResize = () => {
-      const canvas = canvasRef.current;
-      if (canvas && canvas.parentElement) {
-        canvas.width = canvas.parentElement.clientWidth;
-        canvas.height = canvas.parentElement.clientHeight;
+  // Resize canvas using ResizeObserver for precision
+  // useLayoutEffect ensures this runs before paint
+  React.useLayoutEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !canvas.parentElement) return;
+
+    const resize = () => {
+      if (!canvas.parentElement) return;
+      const { clientWidth, clientHeight } = canvas.parentElement;
+      
+      // Update canvas internal resolution to match display size exactly
+      if (canvas.width !== clientWidth || canvas.height !== clientHeight) {
+        canvas.width = clientWidth;
+        canvas.height = clientHeight;
+        
+        // Stabilize player position if they go out of bounds after resize
+        if (gameState === 'PLAYING') {
+          if (playerRef.current.x > canvas.width) playerRef.current.x = canvas.width / 2;
+          if (playerRef.current.y > canvas.height) playerRef.current.y = canvas.height / 2;
+        }
       }
     };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+
+    // Initial resize before paint
+    resize();
+
+    const observer = new ResizeObserver(() => {
+      // Sync with browser's layout cycle
+      requestAnimationFrame(resize);
+    });
+
+    observer.observe(canvas.parentElement);
+    return () => observer.disconnect();
+  }, [gameState]); // Keep gameState for the repositioning logic
 
   return (
-    <div className="w-full max-w-5xl mx-auto bg-white rounded-[3rem] overflow-hidden border-2 border-stone-100 shadow-2xl flex flex-col md:flex-row">
+    <div 
+      className="w-full max-w-5xl mx-auto bg-white rounded-[3rem] overflow-hidden border-2 border-stone-100 shadow-2xl flex flex-col md:flex-row focus:outline-none focus:ring-2 focus:ring-honey/50 transition-all"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        // Focus container if interactive
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+          e.preventDefault();
+        }
+      }}
+    >
       
       {/* GAME SIDEBAR / STATS */}
-      <div className="w-full md:w-64 bg-forest p-8 text-white flex flex-col gap-8">
+      <div className="w-full md:w-64 bg-forest p-8 text-white flex flex-col gap-8 flex-shrink-0">
         <div className="space-y-2">
           <h3 className="text-2xl font-black uppercase tracking-tighter italic leading-tight">Bee Blaster</h3>
           <div className="h-1 w-12 bg-honey"></div>
@@ -449,10 +480,10 @@ const BeeBlaster: React.FC = () => {
       </div>
 
       {/* GAME VIEWPORT */}
-      <div className="flex-grow bg-stone-950 relative min-h-[500px] flex items-center justify-center overflow-hidden">
+      <div className="flex-grow bg-stone-950 relative h-[400px] md:h-auto md:min-h-[600px] flex items-center justify-center overflow-hidden">
         <canvas 
           ref={canvasRef} 
-          className="w-full h-full"
+          className="w-full h-full block"
         />
         
         {gameState === 'START' && (
