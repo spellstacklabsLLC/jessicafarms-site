@@ -39,8 +39,8 @@ const App: React.FC = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    // Studio Page Visit Conversion
-    if (currentPage === Page.Studio && (window as any).gtag) {
+    // Page Visit Conversion
+    if ((currentPage === Page.Studio || currentPage === Page.Farm) && (window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
         'send_to': 'AW-18004717987/SBohCOL8vK8cEKPjqIlD',
         'value': 1.0,
