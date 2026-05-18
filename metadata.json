@@ -1,7 +1,7 @@
 {
   "name": "Jessica Farms - Norton, Ohio",
-  "description": "A rustic, modern farmhouse-style website for Jessica Farms, featuring seasonal produce, fresh eggs, honey, and the featured game BEE BLASTER.",
+  "description": "The official Jessica Farms Market Stand and Studio. Shop Norton-grown honey, koi, and plants, or explore our surreal farm universe through cinematic videos and games.",
   "requestFramePermissions": [
-   
+    "camera"
   ]
 }

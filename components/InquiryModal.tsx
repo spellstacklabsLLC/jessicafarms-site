@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import { getEnvVar } from '../env';
@@ -15,7 +16,7 @@ const InquiryModal: React.FC<InquiryModalProps> = ({ product, onClose }) => {
 
   useEffect(() => {
     if (product) {
-      setMessage(`Hi Jessica! I'm interested in checking the current stock for ${product.name}. Please let me know if they are available for pickup in Norton.`);
+      setMessage(`Hi Jessica! I'm interested in checking the current stock for ${product.name}.`);
     }
   }, [product]);
 
@@ -43,7 +44,7 @@ const InquiryModal: React.FC<InquiryModalProps> = ({ product, onClose }) => {
           email,
           message,
           product: product ? product.name : 'General',
-          _subject: `Koi Stock Inquiry: ${product?.name || 'General'}`
+          _subject: `Product Inquiry: ${product?.name || 'General'}`
         }),
       });
 
@@ -101,8 +102,8 @@ const InquiryModal: React.FC<InquiryModalProps> = ({ product, onClose }) => {
             <>
               <div className="space-y-2">
                 <div className="flex items-center gap-3 text-honey">
-                  <img src="/assets/koi-icon.png" alt="Koi" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">Koi Stock Inquiry</span>
+                  <img src="/assets/honey-icon.png" alt="Honey" className="w-8 h-8 object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">Product Inquiry</span>
                 </div>
                 <h2 className="text-4xl font-serif-modern font-black italic text-forest leading-tight">
                   Message <br/> the Farm

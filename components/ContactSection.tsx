@@ -60,7 +60,7 @@ const ContactSection: React.FC = () => {
               Get in <br/> Touch.
             </h2>
             <p className="text-xl text-stone-500 font-serif-modern italic leading-relaxed max-w-md">
-              Whether you're looking for honey, koi, or just want to say hi, we'd love to hear from you.
+              Whether you're looking for local honey or just want to say hi, we'd love to hear from you.
             </p>
           </div>
 

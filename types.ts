@@ -5,7 +5,7 @@ export interface Product {
   price: string;
   priceNumber: number;
   description: string;
-  category: 'bees' | 'koi' | 'plants' | 'apparel';
+  category: 'hive';
   imageUrl: string;
 }
 

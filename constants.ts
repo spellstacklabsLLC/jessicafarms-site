@@ -12,106 +12,67 @@ export const COLORS = {
 };
 
 export const PRODUCTS: Product[] = [
-  // BEES CATEGORY
+  // HIVE CATEGORY
   {
-    id: 'b2',
-    name: 'Hametown Honey',
-    price: '$12.00',
-    priceNumber: 12,
-    description: '100% pure raw Ohio honey, harvested directly from our Norton hives. 1 pound jar.',
-    category: 'bees',
-    imageUrl: '/assets/honey-jar.jpg'
+    id: 'h1',
+    name: 'Cinnamon Creamed Honey',
+    price: '$8.50',
+    priceNumber: 8.5,
+    description: 'Smooth, spreadable creamed honey infused with organic Ceylon cinnamon. Part of our "Any 3 for $24.99" special! 5oz jar.',
+    category: 'hive',
+    imageUrl: '/assets/cinnamon-honey.jpg'
   },
   {
-    id: 'b1',
-    name: 'Habanero Hot Honey',
-    price: '$12.00',
-    priceNumber: 12,
-    description: 'Our signature "Hot Honey" — local nectar infused with farm-grown habanero peppers. 1 pound jar.',
-    category: 'bees',
+    id: 'h2',
+    name: 'Chocolate Creamed Honey',
+    price: '$8.50',
+    priceNumber: 8.5,
+    description: 'Decadent creamed honey blended with dark cocoa. Dessert in a jar. Part of our "Any 3 for $24.99" special! 5oz jar.',
+    category: 'hive',
+    imageUrl: '/assets/chocolate-honey.jpg'
+  },
+  {
+    id: 'h3',
+    name: 'Strawberry Creamed Honey',
+    price: '$8.50',
+    priceNumber: 8.5,
+    description: 'Vibrant creamed honey blended with real organic strawberries. A bright, fruity favorite. Part of our "Any 3 for $24.99" special! 5oz jar.',
+    category: 'hive',
+    imageUrl: '/assets/strawberry-honey.jpg'
+  },
+  {
+    id: 'h4',
+    name: 'Regular Creamed Honey',
+    price: '$8.50',
+    priceNumber: 8.5,
+    description: '100% pure, raw Ohio honey whipped into a smooth, buttery consistency. Part of our "Any 3 for $24.99" special! 5oz jar.',
+    category: 'hive',
+    imageUrl: '/assets/regular-creamed-honey.jpg'
+  },
+  {
+    id: 'h5',
+    name: 'Hot Creamed Honey',
+    price: '$8.50',
+    priceNumber: 8.5,
+    description: 'Sweet honey with a localized kick! Infused with dried chili peppers for a perfect heat. Part of our "Any 3 for $24.99" special! 5oz jar.',
+    category: 'hive',
     imageUrl: '/assets/hot-honey.jpg'
   },
-  // KOI CATEGORY
   {
-    id: 'k1',
-    name: 'Premium Select Koi (4-6")',
-    price: '$20.00',
-    priceNumber: 20,
-    description: 'Vibrant and healthy young koi with early pattern development, perfect for new pond owners.',
-    category: 'koi',
-    imageUrl: '/assets/koi-small.jpg'
-  },
-  {
-    id: 'k2',
-    name: 'Premium Select Koi (6-8")',
-    price: '$40.00',
-    priceNumber: 40,
-    description: 'Beautifully patterned koi with strong colors and excellent growth potential for established ponds.',
-    category: 'koi',
-    imageUrl: '/assets/koi-medium.jpg'
-  },
-  {
-    id: 'k3',
-    name: 'Premium Select Koi (8-10")',
-    price: '$75.00',
-    priceNumber: 75,
-    description: 'Our largest premium select grade. Robust health, stunning scale definition, and deep coloration.',
-    category: 'koi',
-    imageUrl: '/assets/koi-large.jpg'
-  },
-  // PLANTS CATEGORY
-  {
-    id: 'p1',
-    name: 'Cat Grass Seeds',
-    price: '$6.50',
-    priceNumber: 6.5,
-    description: 'Organic, high-germination wheatgrass seeds. Grow the freshest grass for your feline friends at home.',
-    category: 'plants',
-    imageUrl: '/assets/cat-grass.jpg'
-  },
-  {
-    id: 'p2',
-    name: 'Succulents',
-    price: '$12.00',
-    priceNumber: 12,
-    description: 'Hand-picked variety of hardy, easy-care succulents grown right here in our greenhouse.',
-    category: 'plants',
-    imageUrl: '/assets/succulents.jpg'
-  },
-  // APPAREL CATEGORY
-  {
-    id: 'a1',
-    name: 'Jessica Farms Sticker',
-    price: '$3.00',
-    priceNumber: 3,
-    description: 'High-quality, weather-proof vinyl sticker featuring our Norton farm logo.',
-    category: 'apparel',
-    imageUrl: '/assets/sticker.jpg'
-  },
-  {
-    id: 'a2',
-    name: 'Farm Logo Magnet',
-    price: '$5.00',
-    priceNumber: 5,
-    description: 'Durable fridge magnet. Bring a little piece of the farm into your kitchen.',
-    category: 'apparel',
-    imageUrl: '/assets/magnet.jpg'
-  },
-  {
-    id: 'a3',
-    name: 'Jessica Farms Hat',
-    price: '$25.00',
-    priceNumber: 25,
-    description: 'Classic embroidered trucker hat. One size fits all with an adjustable strap.',
-    category: 'apparel',
-    imageUrl: '/assets/hat.jpg'
+    id: 'h6',
+    name: 'Banana Creamed Honey',
+    price: '$8.50',
+    priceNumber: 8.5,
+    description: 'Creamed honey with natural banana essence. Like comfort food in a jar. Part of our "Any 3 for $24.99" special! 5oz jar.',
+    category: 'hive',
+    imageUrl: '/assets/banana-honey.jpg'
   }
 ];
 
 export const INTRO_VIDEO = {
   id: '6X5Kf7cy5CM',
   title: 'Welcome to Jessica Farms Studio',
-  description: 'Join us on our journey here in Norton, Ohio. Subscribe for the latest farm updates, educational tips, and behind-the-scenes moments from the apiary to the pond.'
+  description: 'Join us on our journey here in Norton, Ohio. Subscribe for the latest farm updates, educational tips, and behind-the-scenes moments from the apiary.'
 };
 
 export const CONFIG = {
