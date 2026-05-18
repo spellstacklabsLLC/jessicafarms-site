@@ -39,6 +39,14 @@ const App: React.FC = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Studio Page Visit Conversion
+    if (currentPage === Page.Studio && (window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-18004717987/SBohCOL8vK8cEKPjqIlD',
+        'value': 1.0,
+        'currency': 'USD'
+      });
+    }
   }, [currentPage]);
 
   const addToCart = (product: Product) => {
@@ -117,16 +125,7 @@ const App: React.FC = () => {
                <img 
                  src="/assets/logo.png" 
                  alt="Jessica Farms Logo" 
-                 className="w-full h-full object-contain relative z-10" 
-                 referrerPolicy="no-referrer" 
-                 onError={(e) => {
-                   (e.target as HTMLImageElement).style.opacity = '0';
-                 }} 
-               />
-               <img 
-                 src="https://picsum.photos/seed/jessicafarms-logo/200/200" 
-                 alt="Farm Placeholder" 
-                 className="absolute inset-0 w-full h-full object-cover opacity-40 z-0" 
+                 className="w-full h-full object-contain" 
                  referrerPolicy="no-referrer" 
                />
             </div>
