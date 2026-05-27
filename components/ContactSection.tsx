@@ -93,7 +93,7 @@ const ContactSection: React.FC = () => {
           <div className="pt-8 opacity-40">
             <div className="flex gap-4 grayscale h-10 items-center">
               <img src="/assets/honey-icon.png" alt="Honey" className="h-full object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
-              <img src="/assets/logo.png" alt="Bee" className="h-full object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
+              <img src="/assets/logo.jpg" alt="Bee" className="h-full object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
               <img src="/assets/wheat-icon.png" alt="Wheat" className="h-full object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
             </div>
           </div>
