@@ -430,7 +430,7 @@ const App: React.FC = () => {
 
     const customBoxProduct: Product = {
       id: bundleKey,
-      name: 'Mix & Match 3-Jar Gilded Box',
+      name: 'Mix & Match 3-Jar Box',
       price: '$44.99',
       priceNumber: 44.99,
       description: `Premium woodcrate bundle with: ${subdescription}.`,
