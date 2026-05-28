@@ -97,7 +97,7 @@ export const PRODUCTS: Product[] = [
 export const COMING_SOON_PRODUCTS: any[] = [];
 
 export const INTRO_VIDEO = {
-  id: 'dkoE_LOktbc',
+  id: 'YU3XNKGCLeg',
   title: 'Jessica Farms Studio',
   description: 'Join us on our journey here in Norton, Ohio. Subscribe for the latest farm updates, educational tips, and behind-the-scenes moments from the apiary.'
 };
