@@ -430,10 +430,10 @@ const App: React.FC = () => {
 
     const customBoxProduct: Product = {
       id: bundleKey,
-      name: 'Mix & Match 3-Jar Box',
+      name: 'Mix & Match 3-Jar Gilded Box',
       price: '$44.99',
       priceNumber: 44.99,
-      description: `Premium bundle with: ${subdescription}.`,
+      description: `Premium woodcrate bundle with: ${subdescription}.`,
       category: 'hive',
       imageUrl: '/assets/custom-bundle.png', // Fallback vector will trigger on error
     };
@@ -736,6 +736,120 @@ const App: React.FC = () => {
               .particle-gold {
                 animation: particleFloat 12s ease-in-out infinite;
               }
+
+              /* Dedicated Breakpoint for widths below 700px (covering 480px-700px range) */
+              @media (max-width: 700px) {
+                .vintage-tv-section-container {
+                  display: flex !important;
+                  flex-direction: column !important;
+                  height: auto !important;
+                  min-height: unset !important;
+                  padding: 1.25rem !important;
+                  border-radius: 1.5rem !important;
+                  overflow: visible !important;
+                }
+                .vintage-tv-grid-layout {
+                  display: flex !important;
+                  flex-direction: column !important;
+                  gap: 1.5rem !important;
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  transform: none !important;
+                  position: relative !important;
+                  top: auto !important;
+                  left: auto !important;
+                  right: auto !important;
+                  bottom: auto !important;
+                }
+                .retro-tv-left-column {
+                  width: 100% !important;
+                  max-width: min(92vw, 440px) !important;
+                  margin: 0 auto !important;
+                  transform: none !important;
+                  position: relative !important;
+                  top: auto !important;
+                  left: auto !important;
+                  right: auto !important;
+                  bottom: auto !important;
+                }
+                .retro-tv-cabinet {
+                  transform: none !important;
+                  margin: 0 auto !important;
+                  max-width: 100% !important;
+                  border-radius: 1.5rem !important;
+                  padding: 0.75rem !important;
+                }
+                /* Prevent antennae and shadow from scaling incorrectly on mobile */
+                .retro-tv-antennae {
+                  margin-bottom: 0.5rem !important;
+                  transform: scale(0.8) !important;
+                  transform-origin: bottom center !important;
+                  max-width: 100% !important;
+                }
+                .retro-tv-shadow-stand {
+                  margin-top: 0.25rem !important;
+                  transform: none !important;
+                  width: 80% !important;
+                }
+                /* Help the explainer flyer flow cleanly */
+                .vintage-tv-right-column {
+                  width: 100% !important;
+                  max-width: min(92vw, 440px) !important;
+                  margin: 0 auto !important;
+                  transform: none !important;
+                  position: relative !important;
+                  top: auto !important;
+                  left: auto !important;
+                  right: auto !important;
+                  bottom: auto !important;
+                  border-radius: 1.5rem !important;
+                  padding: 1.25rem !important;
+                }
+                /* Make product card margin-top responsive so it never collides with the TV */
+                .vintage-tv-product-section {
+                  margin-top: 2rem !important;
+                  border-radius: 1.5rem !important;
+                  padding: 1.25rem !important;
+                }
+                /* Overall layout safety checks */
+                body, html, #root {
+                  overflow-x: hidden !important;
+                }
+                .scroll-smooth {
+                  overflow-x: hidden !important;
+                  overflow-y: visible !important;
+                }
+                /* Hide huge blurred lighting rings to avoid side-scrolling */
+                .vintage-tv-section-container .blur-3xl {
+                  display: none !important;
+                }
+              }
+
+              /* Dedicated Breakpoint around 600px for robust mobile transition and spacing */
+              @media (max-width: 600px) {
+                .vintage-tv-section-container {
+                  padding: 1rem !important;
+                  border-radius: 1.25rem !important;
+                }
+                .vintage-tv-grid-layout {
+                  gap: 1.25rem !important;
+                }
+                .retro-tv-left-column, .vintage-tv-right-column {
+                  max-width: min(94vw, 380px) !important;
+                }
+                .vintage-tv-product-section {
+                  margin-top: 1.5rem !important;
+                  padding: 1rem !important;
+                  border-radius: 1.25rem !important;
+                }
+                /* Ensure responsive font sizing so no scaling overflows label limits */
+                .vintage-tv-right-column h4 {
+                  font-size: 1.35rem !important;
+                }
+                .vintage-tv-right-column span.text-5xl {
+                  font-size: 2.25rem !important;
+                }
+              }
             `}</style>
 
             {/* STICKY FLOATING SHOPPING CART FAST CHECKOUT */}
@@ -959,7 +1073,7 @@ const App: React.FC = () => {
             ) : (
               <>
                 {/* VINTAGE RETRO TV SHOWCASE CENTERPIECE AT TOP */}
-                <section className="relative overflow-visible bg-gradient-to-br from-[#1a4332] via-[#102d21] to-[#0a1f16] rounded-[2.5rem] text-[#fdfcf8] shadow-3xl border-4 border-[#d9a520]/25 p-5 md:p-7 lg:p-10 flex flex-col items-center space-y-4 pb-12 md:pb-16 lg:pb-24">
+                <section className="vintage-tv-section-container relative overflow-visible bg-gradient-to-br from-[#1a4332] via-[#102d21] to-[#0a1f16] rounded-[2.5rem] text-[#fdfcf8] shadow-3xl border-4 border-[#d9a520]/25 p-5 md:p-7 lg:p-10 flex flex-col items-center space-y-4 pb-12 md:pb-16 lg:pb-24">
                   
                   {/* Subtle retro retro grain overlay */}
                   <div className="absolute inset-0 opacity-5 pointer-events-none mix-blend-overlay bg-[radial-gradient(#d9a520_1px,transparent_1px)] [background-size:16px_16px]"></div>
@@ -978,13 +1092,13 @@ const App: React.FC = () => {
                   <div className="absolute right-1/4 top-1/4 -translate-y-1/2 w-[450px] h-[450px] bg-gradient-to-r from-[#d9a520]/15 to-amber-600/5 rounded-full blur-3xl animate-glow-pulse pointer-events-none z-0"></div>
 
                   {/* SIDE-BY-SIDE INTEGRATED GRID LAYOUT */}
-                  <div className="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-12 lg:gap-8 items-center relative z-20">
+                  <div className="vintage-tv-grid-layout w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-12 lg:gap-8 items-center relative z-20">
                     
                     {/* LEFT COLUMN: RETRO TV (Col-span 7) - Elegant size scale */}
-                    <div className="col-span-12 lg:col-span-7 relative w-full max-w-full lg:max-w-[760px] mx-auto flex flex-col items-center">
+                    <div className="retro-tv-left-column col-span-12 lg:col-span-7 relative w-full max-w-full lg:max-w-[760px] mx-auto flex flex-col items-center">
                       
                       {/* ANTENNAE (Rabbit ears) */}
-                      <div className="relative w-48 h-10 mb-0 lg:-mb-2 flex justify-between px-8 pointer-events-none z-15 lg:scale-75">
+                      <div className="retro-tv-antennae relative w-48 h-10 mb-0 lg:-mb-2 flex justify-between px-8 pointer-events-none z-15 lg:scale-75">
                         {/* Left ear */}
                         <div className="w-1 h-14 bg-gradient-to-t from-[#8a7251]/80 to-stone-400 origin-bottom transform -rotate-[35deg] rounded-full shadow-md">
                           <div className="w-2.5 h-2.5 bg-[#8a7251] rounded-full -mt-1.5 -ml-0.5"></div>
@@ -998,7 +1112,7 @@ const App: React.FC = () => {
                       </div>
 
                       {/* MAIN RETRO TV CABINET */}
-                      <div className="w-full max-w-full bg-gradient-to-b from-[#38230f] via-[#4f3115] to-[#251608] rounded-[2.5rem] p-4 shadow-3xl border-4 border-[#613e1c] relative grid grid-cols-12 gap-3 items-stretch shadow-[0_25px_60px_rgba(0,0,0,0.7)]">
+                      <div className="retro-tv-cabinet w-full max-w-full bg-gradient-to-b from-[#38230f] via-[#4f3115] to-[#251608] rounded-[2.5rem] p-4 shadow-3xl border-4 border-[#613e1c] relative grid grid-cols-12 gap-3 items-stretch shadow-[0_25px_60px_rgba(0,0,0,0.7)]">
                         
                         <div className="absolute top-1 inset-x-10 h-1 bg-white/10 rounded-full blur-[2px] pointer-events-none"></div>
                         
@@ -1225,11 +1339,11 @@ const App: React.FC = () => {
                       </div>
 
                       {/* Shadow stand decoration */}
-                      <div className="w-[85%] h-5 bg-stone-950/55 blur-md rounded-full mt-1 lg:-mt-2"></div>
+                      <div className="retro-tv-shadow-stand w-[85%] h-5 bg-stone-950/55 blur-md rounded-full mt-1 lg:-mt-2"></div>
                     </div>
 
                     {/* RIGHT COLUMN: SLEEK MIX & MATCH FLYER EXPLAINER COLUMN (Col-span 5) */}
-                    <div className="col-span-12 lg:col-span-5 relative w-full mt-8 lg:mt-0 self-auto lg:self-stretch bg-[#0a1612]/95 border border-[#d9a520]/45 p-6 md:p-8 rounded-[2rem] shadow-2xl flex flex-col justify-between text-white backdrop-blur-md h-auto transition-all duration-500 lg:hover:scale-105 hover:shadow-[0_25px_60px_rgba(217,165,32,0.25)] hover:border-[#d9a520]/80 ease-out z-10 lg:hover:z-20 max-w-[480px] lg:max-w-none mx-auto space-y-4">
+                    <div className="vintage-tv-right-column col-span-12 lg:col-span-5 relative w-full mt-8 lg:mt-0 self-auto lg:self-stretch bg-[#0a1612]/95 border border-[#d9a520]/45 p-6 md:p-8 rounded-[2rem] shadow-2xl flex flex-col justify-between text-white backdrop-blur-md h-auto transition-all duration-500 lg:hover:scale-105 hover:shadow-[0_25px_60px_rgba(217,165,32,0.25)] hover:border-[#d9a520]/80 ease-out z-10 lg:hover:z-20 max-w-[480px] lg:max-w-none mx-auto space-y-4">
                       
                       {/* Premium Placeholder Image from Custom-Bundle */}
                       <div className="relative w-full h-48 md:h-52 rounded-2xl overflow-hidden border-2 border-[#d9a520]/50 bg-black/10 shadow-2xl transition-all duration-300 group-hover:border-[#d9a520] select-none">
@@ -1274,7 +1388,7 @@ const App: React.FC = () => {
                 </section>
 
                 {/* THE JESSICA FARMS FLAVOR VAULT & TASTING ROOM */}
-                <section className="bg-stone-50 rounded-[2.5rem] border border-stone-200 p-6 md:p-8 space-y-6 mt-8 md:mt-12 lg:mt-16">
+                <section className="vintage-tv-product-section bg-stone-50 rounded-[2.5rem] border border-stone-200 p-6 md:p-8 space-y-6 mt-8 md:mt-12 lg:mt-16">
                   
                   {/* Grid header (Fully centered for a balanced look right under the TV showcase) */}
                   <div className="flex flex-col justify-center items-center text-center gap-3 border-b border-stone-200 pb-6 w-full max-w-xl mx-auto">
