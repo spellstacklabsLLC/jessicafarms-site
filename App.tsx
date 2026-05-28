@@ -660,12 +660,12 @@ const App: React.FC = () => {
           <div className="max-w-6xl mx-auto space-y-32 animate-in fade-in duration-700">
             {/* ABOUT HERO */}
             <section className="relative group overflow-hidden bg-white rounded-[3rem] border-2 border-forest/10 shadow-xl">
-              <div className="grid lg:grid-cols-2 min-h-[550px]">
-                <div className="relative border-b-2 lg:border-b-0 lg:border-r-2 border-forest/5 overflow-hidden">
+              <div className="grid lg:grid-cols-2 min-h-0 lg:min-h-[550px] w-full">
+                <div className="relative border-b-2 lg:border-b-0 lg:border-r-2 border-forest/5 overflow-hidden h-64 sm:h-80 md:h-96 lg:h-auto min-h-[280px] lg:min-h-full w-full">
                   <img 
                     src="/assets/farm-hero.jpg" 
                     alt="Norton Farm" 
-                    className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110"
                   />
                 </div>
                 <div className="p-12 lg:p-20 flex flex-col justify-center space-y-8 bg-white">
@@ -699,10 +699,10 @@ const App: React.FC = () => {
                     Our bees forage on local wildflowers, producing pure honey that we transform into silky creamed treats in a variety of seasonal flavors.
                   </p>
                 </div>
-                <div className="relative group tilt-hover cursor-pointer">
+                <div className="relative group tilt-hover cursor-pointer w-full">
                   <div className="absolute -inset-2 bg-honey/10 rounded-[3rem] rotate-3 -z-10 transition-transform group-hover:rotate-6"></div>
-                  <div className="rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl">
-                    <img src="/assets/apiary.jpg" alt="Apiary" className="w-full h-full object-cover" />
+                  <div className="rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl relative w-full aspect-[4/3]">
+                    <img src="/assets/apiary.jpg" alt="Apiary" className="absolute inset-0 w-full h-full object-cover" />
                   </div>
                 </div>
               </section>
@@ -744,7 +744,7 @@ const App: React.FC = () => {
                   flex-direction: column !important;
                   height: auto !important;
                   min-height: unset !important;
-                  padding: 1.25rem !important;
+                  padding: 1.5rem 1rem !important;
                   border-radius: 1.5rem !important;
                   overflow: visible !important;
                 }
@@ -807,7 +807,7 @@ const App: React.FC = () => {
                 }
                 /* Make product card margin-top responsive so it never collides with the TV */
                 .vintage-tv-product-section {
-                  margin-top: 2rem !important;
+                  margin-top: 3.5rem !important;
                   border-radius: 1.5rem !important;
                   padding: 1.25rem !important;
                 }
@@ -825,29 +825,77 @@ const App: React.FC = () => {
                 }
               }
 
-              /* Dedicated Breakpoint around 600px for robust mobile transition and spacing */
-              @media (max-width: 600px) {
+              /* Dedicated Breakpoint around 640px for robust mobile transition and spacing */
+              @media (max-width: 640px) {
                 .vintage-tv-section-container {
-                  padding: 1rem !important;
+                  padding: 1.25rem 0.75rem !important;
                   border-radius: 1.25rem !important;
-                }
-                .vintage-tv-grid-layout {
-                  gap: 1.25rem !important;
                 }
                 .retro-tv-left-column, .vintage-tv-right-column {
-                  max-width: min(94vw, 380px) !important;
+                  max-width: min(92vw, 410px) !important;
                 }
                 .vintage-tv-product-section {
-                  margin-top: 1.5rem !important;
-                  padding: 1rem !important;
+                  margin-top: 3rem !important;
                   border-radius: 1.25rem !important;
+                  padding: 1.25rem !important;
                 }
-                /* Ensure responsive font sizing so no scaling overflows label limits */
+              }
+
+              /* Dedicated Breakpoint around 600px */
+              @media (max-width: 600px) {
+                .retro-tv-left-column, .vintage-tv-right-column {
+                  max-width: min(92vw, 390px) !important;
+                }
                 .vintage-tv-right-column h4 {
-                  font-size: 1.35rem !important;
+                  font-size: 1.4rem !important;
                 }
                 .vintage-tv-right-column span.text-5xl {
                   font-size: 2.25rem !important;
+                }
+                .vintage-tv-product-section {
+                  margin-top: 2.5rem !important;
+                }
+              }
+
+              /* Dedicated Breakpoint at 575px and below */
+              @media (max-width: 575px) {
+                .retro-tv-left-column, .vintage-tv-right-column {
+                  max-width: min(92vw, 370px) !important;
+                }
+              }
+
+              /* Compact sizing for mobile screens (430px, 390px, 375px) */
+              @media (max-width: 430px) {
+                .vintage-tv-section-container {
+                  padding: 1rem 0.5rem !important;
+                }
+                .retro-tv-left-column, .vintage-tv-right-column {
+                  max-width: min(94vw, 340px) !important;
+                }
+                .vintage-tv-right-column {
+                  padding: 1.25rem !important;
+                }
+                .vintage-tv-right-column h4 {
+                  font-size: 1.25rem !important;
+                }
+                .vintage-tv-right-column span.text-5xl {
+                  font-size: 2rem !important;
+                }
+                .vintage-tv-product-section {
+                  margin-top: 2rem !important;
+                  padding: 1rem !important;
+                }
+              }
+
+              @media (max-width: 375px) {
+                .retro-tv-left-column, .vintage-tv-right-column {
+                  max-width: min(95vw, 310px) !important;
+                }
+                .vintage-tv-right-column h4 {
+                  font-size: 1.15rem !important;
+                }
+                .vintage-tv-right-column span.text-5xl {
+                  font-size: 1.75rem !important;
                 }
               }
             `}</style>
@@ -1122,7 +1170,7 @@ const App: React.FC = () => {
                           <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none rounded-t-xl z-25"></div>
                           <div className="absolute inset-0 pointer-events-none z-20 opacity-[0.14] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.15)_0%,rgba(0,0,0,0.7)_100%)]"></div>
                           
-                          <div className="w-full aspect-[16/9] h-auto rounded-xl overflow-hidden bg-black relative z-10 border border-stone-900 shadow-inner">
+                          <div className="w-full aspect-[16/9] rounded-xl overflow-hidden bg-black relative z-10 border border-stone-900 shadow-inner">
                             {/* Always render iframe if TV is on */}
                             {tvOn && (
                               <iframe 
@@ -1135,7 +1183,7 @@ const App: React.FC = () => {
                                 frameBorder="0" 
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                                 allowFullScreen
-                                className="w-full h-full"
+                                className="absolute inset-0 w-full h-full"
                               />
                             )}
 
@@ -1350,7 +1398,7 @@ const App: React.FC = () => {
                         <img 
                           src="/assets/custom-bundle.png" 
                           alt="Mix & Match 3-Jar Box" 
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter brightness-105 contrast-105 saturate-110"
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter brightness-105 contrast-105 saturate-110"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = 'https://picsum.photos/seed/honeybox/400/300';
                           }}
@@ -1427,7 +1475,7 @@ const App: React.FC = () => {
                                 src={flavor.imageUrl} 
                                 alt={flavor.name}
                                 referrerPolicy="no-referrer"
-                                className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" 
+                                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-500" 
                                 onError={(e) => {
                                   // Fallback dynamic seeded picsum image
                                   (e.target as HTMLImageElement).src = `https://picsum.photos/seed/jessica-${flavor.id}/500/375`;
