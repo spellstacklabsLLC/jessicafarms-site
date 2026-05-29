@@ -38,24 +38,24 @@ export const PRODUCTS: Product[] = [
     category: 'hive',
     imageUrl: '/assets/strawberry-honey.jpg'
   },
-  {
-    id: 'h4',
-    name: 'Banana Creamed Honey',
-    price: '3-Jar Box Item',
-    priceNumber: 14.99,
-    description: 'Silky whipped clover honey infused with rich, natural banana sweetness. Tastes just like homemade banana cream comfort. 5oz jar.',
-    category: 'hive',
-    imageUrl: '/assets/banana-honey.jpg'
-  },
   // {
-  //   id: 'h5',
-  //   name: 'Cherry Creamed Honey',
+  //   id: 'h4',
+  //   name: 'Banana Creamed Honey',
   //   price: '3-Jar Box Item',
   //   priceNumber: 14.99,
-  //   description: 'Deep, rich whipped honey spun with Ohio wild cherry essence. Bold, fruity, and delightfully complex flavor profile. 5oz jar.',
+  //   description: 'Silky whipped clover honey infused with rich, natural banana sweetness. Tastes just like homemade banana cream comfort. 5oz jar.',
   //   category: 'hive',
-  //   imageUrl: '/assets/cherry-honey.jpg'
+  //   imageUrl: '/assets/banana-honey.jpg'
   // },
+  {
+    id: 'h5',
+    name: 'Habanero Creamed Honey',
+    price: '3-Jar Box Item',
+    priceNumber: 14.99,
+    description: 'Smooth creamed honey blended with habanero chile powder. Sweet, spicy, and handcrafted in small batches with a warm lingering heat. 5oz jar.'    ,
+    category: 'hive',
+    imageUrl: '/assets/habanero-honey.jpg'
+  },
   // {
   //   id: 'h6',
   //   name: 'Hot Honey Chilli Infusion',
