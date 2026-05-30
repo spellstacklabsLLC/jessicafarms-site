@@ -524,6 +524,15 @@ const App: React.FC = () => {
   }, [currentPage]);
 
   const addToCart = (product: Product) => {
+
+    if ((window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-18004717987/nsywCMHzjLYcEKPjqIlD',
+        'value': 1.0,
+        'currency': 'USD'
+      });
+    }
+  
     setLastAddedName(product.name);
     setShowAddedToast(true);
     setTimeout(() => {
