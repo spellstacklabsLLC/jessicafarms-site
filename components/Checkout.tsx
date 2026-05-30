@@ -201,7 +201,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
 
           {/* Boutique Small-Batch Processing Notice */}
           <div className="text-center pt-3 pb-1">
-          <p className="text-[13px] md:text-[14px] text-stone-600 font-serif-modern leading-relaxed tracking-wide">              ✦ Packed fresh in small batches. Ships within 7–10 business days. ✦
+          <p className="text-[13px] md:text-[14px] text-stone-600 font-serif-modern leading-relaxed tracking-wide">              ✦ Packed fresh in small batches. Ships within 7 business days. ✦
             </p>
           </div>
 
