@@ -6,6 +6,7 @@ import GamesSection from './components/Games';
 import Checkout from './components/Checkout';
 import InquiryModal from './components/InquiryModal';
 import ContactSection from './components/ContactSection';
+import Homepage from './components/Homepage';
 import { ShoppingCart, ChevronDown, Trash2, Volume2 } from 'lucide-react';
 
 const BeeItem: React.FC<{ scale: number }> = ({ scale }) => {
@@ -352,7 +353,7 @@ const ShopFlybyBee: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
 };
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>(Page.Shop);
+  const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -430,10 +431,10 @@ const App: React.FC = () => {
 
     const customBoxProduct: Product = {
       id: bundleKey,
-      name: 'Mix & Match 3-Jar Box',
-      price: '$44.99',
-      priceNumber: 44.99,
-      description: `Premium bundle with: ${subdescription}.`,
+      name: 'Mix & Match 3-Jar Gilded Box',
+      price: '$34.99',
+      priceNumber: 34.99,
+      description: `Premium woodcrate bundle with: ${subdescription}.`,
       category: 'hive',
       imageUrl: '/assets/custom-bundle.png', // Fallback vector will trigger on error
     };
@@ -514,7 +515,7 @@ const App: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
     // Page Visit Conversion
-    if ((currentPage === Page.Studio || currentPage === Page.Farm || currentPage === Page.Shop) && (window as any).gtag) {
+    if ((currentPage === Page.Studio || currentPage === Page.Shop) && (window as any).gtag) {
       (window as any).gtag('event', 'conversion', {
         'send_to': 'AW-18004717987/SBohCOL8vK8cEKPjqIlD',
         'value': 1.0,
@@ -524,15 +525,6 @@ const App: React.FC = () => {
   }, [currentPage]);
 
   const addToCart = (product: Product) => {
-
-    if ((window as any).gtag) {
-      (window as any).gtag('event', 'conversion', {
-        'send_to': 'AW-18004717987/nsywCMHzjLYcEKPjqIlD',
-        'value': 1.0,
-        'currency': 'USD'
-      });
-    }
-  
     setLastAddedName(product.name);
     setShowAddedToast(true);
     setTimeout(() => {
@@ -548,6 +540,18 @@ const App: React.FC = () => {
   };
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const navigateToHomeSection = (sectionId: string) => {
+    setCurrentPage(Page.Home);
+    setTimeout(() => {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 150);
+  };
 
   const NavLink = ({ page, label, emoji }: { page: Page, label: string, emoji: string }) => (
     <button 
@@ -569,7 +573,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-honey selection:text-white">
-      {currentPage === Page.Farm && <FlyingBees />}
+      {currentPage === Page.Home && <FlyingBees />}
       
       <InquiryModal product={activeInquiry} onClose={() => setActiveInquiry(null)} />
 
@@ -605,7 +609,7 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <div 
             onClick={() => {
-              setCurrentPage(Page.Farm);
+              setCurrentPage(Page.Home);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="flex items-center gap-4 cursor-pointer group tilt-hover"
@@ -633,8 +637,8 @@ const App: React.FC = () => {
               transition-all duration-300 transform z-[100]
               ${mobileMenuOpen ? 'translate-y-0 opacity-100 visible' : '-translate-y-4 opacity-0 invisible lg:translate-y-0 lg:visible lg:opacity-100'}
             `}>
+              <NavLink page={Page.Home} label="Home" emoji="🏡" />
               {CONFIG.enableStore && <NavLink page={Page.Shop} label="Shop" emoji="🛒" />}
-              <NavLink page={Page.Farm} label="Farm" emoji="🏠" />
               {CONFIG.enableStudio && <NavLink page={Page.Studio} label="Studio" emoji="🎥" />}
               {CONFIG.enablePlay && <NavLink page={Page.Play} label="Play" emoji="🎮" />}
               <NavLink page={Page.Contact} label="Contact" emoji="📫" />
@@ -665,57 +669,12 @@ const App: React.FC = () => {
 
       <main className="flex-grow pt-32 pb-20 px-6">
         
-        {currentPage === Page.Farm && (
-          <div className="max-w-6xl mx-auto space-y-32 animate-in fade-in duration-700">
-            {/* ABOUT HERO */}
-            <section className="relative group overflow-hidden bg-white rounded-[3rem] border-2 border-forest/10 shadow-xl">
-              <div className="grid lg:grid-cols-2 min-h-0 lg:min-h-[550px] w-full">
-                <div className="relative border-b-2 lg:border-b-0 lg:border-r-2 border-forest/5 overflow-hidden h-64 sm:h-80 md:h-96 lg:h-auto min-h-[280px] lg:min-h-full w-full">
-                  <img 
-                    src="/assets/farm-hero.jpg" 
-                    alt="Norton Farm" 
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-110"
-                  />
-                </div>
-                <div className="p-12 lg:p-20 flex flex-col justify-center space-y-8 bg-white">
-                  <h2 className="text-5xl lg:text-8xl font-serif-modern font-black italic leading-none text-forest">
-                    The Honey <br/> Life.
-                  </h2>
-                  <p className="text-2xl font-medium leading-relaxed text-stone-500 font-serif-modern italic">
-                    "raising bees and crafting small-batch creamed honey with heart in our corner of Ohio."
-                  </p>
-                  <div className="flex flex-wrap gap-4 pt-4">
-                    {CONFIG.enableStore && (
-                      <button onClick={()=>setCurrentPage(Page.Shop)} className="btn-honey px-10 py-5 rounded-2xl text-xs font-black uppercase tracking-widest text-white">Explore Shop</button>
-                    )}
-                    {CONFIG.enableStudio && (
-                      <button onClick={()=>setCurrentPage(Page.Studio)} className="tilt-hover bg-white hover:bg-forest/5 text-forest border-2 border-forest px-10 py-5 rounded-2xl text-xs font-black uppercase tracking-widest">Farm Studio</button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* FARM SECTIONS */}
-            <div className="space-y-48">
-              <section className="grid lg:grid-cols-2 gap-20 items-center">
-                <div className="space-y-8">
-                  <div className="inline-flex items-center gap-4 border-b-2 border-honey pb-2">
-                    <img src="/assets/honey-icon.png" alt="Honey" className="w-12 h-12 object-contain tilt-hover" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
-                    <h3 className="text-4xl font-black uppercase tracking-tighter italic text-forest">Norton Apiary</h3>
-                  </div>
-                  <p className="text-2xl text-stone-600 font-serif-modern leading-relaxed italic">
-                    Our bees forage on local wildflowers, producing pure honey that we transform into silky creamed treats in a variety of seasonal flavors.
-                  </p>
-                </div>
-                <div className="relative group tilt-hover cursor-pointer w-full">
-                  <div className="absolute -inset-2 bg-honey/10 rounded-[3rem] rotate-3 -z-10 transition-transform group-hover:rotate-6"></div>
-                  <div className="rounded-[3rem] overflow-hidden border-4 border-white shadow-2xl relative w-full aspect-[4/3]">
-                    <img src="/assets/apiary.jpg" alt="Apiary" className="absolute inset-0 w-full h-full object-cover" />
-                  </div>
-                </div>
-              </section>
-            </div>
+        {currentPage === Page.Home && (
+          <div className="animate-in fade-in duration-700">
+            <Homepage 
+              setCurrentPage={setCurrentPage} 
+              onInquireProduct={(product) => setActiveInquiry(product)} 
+            />
           </div>
         )}
 
@@ -998,10 +957,10 @@ const App: React.FC = () => {
                     <div className="bg-white/[0.04] border border-white/5 rounded-xl p-2.5 flex justify-between items-center text-left">
                       <div>
                         <span className="text-[7.5px] uppercase font-black text-[#d9a520] tracking-widest block leading-none">SPECIAL COMBINATION OFFER</span>
-                        <span className="text-[11px] font-bold font-serif-modern italic text-stone-200 mt-1 block">Any 3 flavors for only $44.99!</span>
+                        <span className="text-[11px] font-bold font-serif-modern italic text-stone-200 mt-1 block">Any 3 flavors for only $34.99!</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs font-black text-amber-500 block leading-none">$44.99</span>
+                        <span className="text-xs font-black text-amber-500 block leading-none">$34.99</span>
                         <span className="text-[6.5px] font-mono text-stone-400 uppercase tracking-widest block mt-0.5">Free Shipping</span>
                       </div>
                     </div>
@@ -1054,7 +1013,7 @@ const App: React.FC = () => {
                           }}
                           className="w-full bg-[#d9a520] hover:bg-[#c4951b] text-[#1a4332] font-black text-[9px] uppercase tracking-[0.2em] py-3.5 rounded-xl shadow-lg transition-all duration-300 active:scale-95 animate-pulse"
                         >
-                          📥 Add Completed Box • $44.99
+                          📥 Add Completed Box • $34.99
                         </button>
                       ) : (
                         <div className="text-center py-2.5 bg-white/5 rounded-xl text-stone-400 font-serif-modern text-[8.5px] italic">
@@ -1429,7 +1388,7 @@ const App: React.FC = () => {
                           CRAFT YOUR 3-JAR BOX
                         </div>
                         <div className="flex items-center justify-center gap-5 mt-2">
-                          <span className="text-5xl font-black text-[#d9a520] tracking-tight font-serif-modern italic leading-none">$44.99</span>
+                          <span className="text-5xl font-black text-[#d9a520] tracking-tight font-serif-modern italic leading-none">$34.99</span>
                           <div className="h-9 w-[1px] bg-stone-700/60"></div>
                           <div className="text-left leading-none">
                             <span className="text-xs tracking-widest font-extrabold text-[#d9a520] uppercase font-sans block">FREE SHIPPING</span>
@@ -1664,11 +1623,13 @@ const App: React.FC = () => {
           </div>
           
           <nav className="flex flex-wrap justify-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">
-            {CONFIG.enableStore && <button onClick={() => setCurrentPage(Page.Shop)} className="hover:text-forest transition-colors">Shop</button>}
-            <button onClick={() => setCurrentPage(Page.Farm)} className="hover:text-forest transition-colors">Farm</button>
-            {CONFIG.enableStudio && <button onClick={() => setCurrentPage(Page.Studio)} className="hover:text-forest transition-colors">Studio</button>}
-            {CONFIG.enablePlay && <button onClick={() => setCurrentPage(Page.Play)} className="hover:text-forest transition-colors">Play</button>}
-            <button onClick={() => setCurrentPage(Page.Contact)} className="hover:text-forest transition-colors">Contact</button>
+            <button onClick={() => { setCurrentPage(Page.Home); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-forest transition-colors">Home</button>
+            {CONFIG.enableStore && <button onClick={() => { setCurrentPage(Page.Shop); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-forest transition-colors">Shop</button>}
+            <button onClick={() => navigateToHomeSection('markets')} className="hover:text-forest transition-colors">Markets</button>
+            {CONFIG.enableEducation && <button onClick={() => navigateToHomeSection('education')} className="hover:text-forest transition-colors">Educational Events</button>}
+            <button onClick={() => { setCurrentPage(Page.Contact); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-forest transition-colors">Contact</button>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-forest transition-colors">Instagram</a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-forest transition-colors">Facebook</a>
           </nav>
 
           <div className="h-[1px] w-20 bg-stone-100"></div>

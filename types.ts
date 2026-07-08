@@ -14,7 +14,7 @@ export interface CartItem extends Product {
 }
 
 export enum Page {
-  Farm = 'farm',
+  Home = 'home',
   Shop = 'shop',
   Studio = 'studio',
   Play = 'play',

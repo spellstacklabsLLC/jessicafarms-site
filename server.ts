@@ -90,7 +90,7 @@ async function startServer() {
             quantity: item.quantity,
             name: item.name || "Mix & Match 3-Jar Box",
             description: item.description || "Custom 3-jar honey bundle",
-            priceNumber: 44.99,
+            priceNumber: 34.99,
           });
         } else {
           const product = PRODUCTS.find((p) => p.id === item.id);
@@ -109,12 +109,12 @@ async function startServer() {
       });
 
       // Calculate target pricing for 3-jar boxes
-      // Each box of 3 is $44.99. We do not sell singles.
+      // Each box of 3 is $34.99. We do not sell singles.
       const totalRegularQty = regularItems.reduce((sum, item) => sum + item.quantity, 0);
       const regularBaseSubtotalInCents = Math.round(regularItems.reduce((sum, item) => sum + (item.priceNumber * item.quantity), 0) * 100);
 
       const bundlesOf3 = Math.floor(totalRegularQty / 3);
-      const targetRegularSubtotalInCents = Math.round((bundlesOf3 * 44.99) * 100);
+      const targetRegularSubtotalInCents = Math.round((bundlesOf3 * 34.99) * 100);
 
       // Construct line items
       const lineItems: any[] = [];
@@ -133,7 +133,7 @@ async function startServer() {
               description: bItem.description,
               images: [`${req.headers.origin}/assets/bundle-box.png`],
             },
-            unit_amount: 4499, // $44.99
+            unit_amount: 3499, // $34.99
           },
           quantity: bItem.quantity,
         });
@@ -243,14 +243,11 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-  //   app.get("*", (req, res) => {
-  //     res.sendFile(path.join(distPath, "index.html"));
-  //   });
-  // }
-  app.get(/.*/, (req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
-}
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(distPath, "index.html"));
+    });
+  }
+
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
