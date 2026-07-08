@@ -103,10 +103,10 @@ export const INTRO_VIDEO = {
 };
 
 export const CONFIG = {
-  enableStore: getEnvVar('VITE_ENABLE_STORE') !== 'false', // Default to true unless explicitly 'false'
+  enableStore: true,
   enableStudio: getEnvVar('VITE_ENABLE_STUDIO') === 'true', // Default to false unless explicitly 'true'
   enablePlay: getEnvVar('VITE_ENABLE_PLAY') === 'true', // Default to false unless explicitly 'true'
-  enableEducation: getEnvVar('VITE_ENABLE_EDUCATION') === 'true', // Default to false unless explicitly 'true'
+  enableEducation: true,
 };
 
 export const HONEY_RECIPES = [
