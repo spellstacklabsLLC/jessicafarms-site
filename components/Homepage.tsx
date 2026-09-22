@@ -20,13 +20,23 @@ import {
 interface HomepageProps {
   setCurrentPage: (page: Page) => void;
   onInquireProduct?: (product: Product) => void;
+  onShopHotHoney?: () => void;
 }
 
-const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct }) => {
+const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, onShopHotHoney }) => {
   const [showFullSchedule, setShowFullSchedule] = useState(false);
 
   // Take 3 popular products for featured display
   const featuredProducts = PRODUCTS.slice(0, 3);
+
+  const handleShopHotHoney = () => {
+    if (onShopHotHoney) {
+      onShopHotHoney();
+    } else {
+      setCurrentPage(Page.Shop);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -113,6 +123,74 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct })
             >
               Upcoming Markets
             </button>
+
+            <button 
+              onClick={() => scrollToSection('youtube')}
+              className="bg-[#1a4332]/50 hover:bg-[#1a4332] border border-[#d9a520]/30 hover:border-[#d9a520] text-[#fdfcf8] px-8 py-5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2"
+            >
+              <Youtube className="w-4 h-4 text-red-500 fill-red-500" />
+              Watch Studio
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURED HOT HONEY SECTION */}
+      <section className="relative rounded-[3rem] overflow-hidden bg-gradient-to-br from-[#1b120c] via-[#241710] to-[#120a06] text-[#fdfcf8] shadow-3xl border-4 border-[#d9a520]/30 mx-auto max-w-6xl p-8 md:p-12 lg:p-16">
+        {/* Ambient Warm Golden & Pepper Glow Effects */}
+        <div className="absolute -right-20 -top-20 w-96 h-96 bg-[#d9a520]/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -left-20 -bottom-20 w-96 h-96 bg-red-650/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+          {/* Product Image */}
+          <div className="lg:col-span-5 flex justify-center">
+            <div className="relative w-full max-w-md aspect-square rounded-[2.5rem] overflow-hidden border-2 border-[#d9a520]/50 shadow-[0_20px_50px_rgba(0,0,0,0.6)] group bg-stone-900">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10 pointer-events-none"></div>
+              <img 
+                src="/assets/hot-honey.jpg" 
+                alt="Jessica Farms Hot Honey" 
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-105 contrast-105"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = 'assets/hothoneypromo2.png';
+                }}
+              />
+              <div className="absolute top-4 left-4 z-20">
+                <span className="bg-[#d9a520] text-[#1a4332] text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+                  Sweet Heat
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Product Information & Order CTA */}
+          <div className="lg:col-span-7 space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#d9a520]/15 text-[#d9a520] border border-[#d9a520]/30 rounded-full text-[10px] font-black uppercase tracking-[0.25em]">
+              <Sparkles className="w-3.5 h-3.5 text-[#d9a520]" />
+              Featured Release
+            </div>
+
+            <div className="space-y-3">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif-modern font-black italic tracking-tight leading-tight text-[#fdfcf8]">
+                Jessica Farms Hot Honey
+              </h2>
+              <p className="text-stone-300 text-base md:text-xl font-serif-modern italic leading-relaxed">
+                Made with real honey, habanero & ghost peppers.
+              </p>
+              <p className="text-[#d9a520] text-lg md:text-2xl font-serif-modern font-black italic">
+                Sweet heat with a serious kick.
+              </p>
+            </div>
+
+            {/* Direct Shop CTA */}
+            <div className="pt-4 border-t border-white/10 flex flex-wrap items-center gap-6">
+              <button 
+                onClick={handleShopHotHoney}
+                className="bg-[#d9a520] hover:bg-[#c4951b] text-[#1a4332] px-8 py-4.5 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl flex items-center gap-2.5 group transition-all duration-300 active:scale-95 cursor-pointer"
+              >
+                <span>Shop Hot Honey</span>
+                <ArrowRight className="w-4 h-4 text-[#1a4332] group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -125,10 +203,10 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct })
             From the Hive to Your Table
           </div>
           <h2 className="text-4xl md:text-5xl font-serif-modern font-black text-forest italic leading-none tracking-tight">
-            Our Whipped Creamed Favorites
+            Our Creamed Honey Favorites
           </h2>
           <p className="text-stone-500 font-serif-modern italic text-sm leading-relaxed">
-            Unlike liquid honey, our creamed honeys are slowly spun at precise cool temperatures to develop an incredibly smooth, spreadable velvet texture. Try them in our signature 3-jar wood-crate bundle.
+            Unlike liquid honey, our creamed honeys are slowly spun at precise cool temperatures to develop an incredibly smooth, spreadable velvet texture. Handcrafted in small batches in Norton, Ohio.
           </p>
         </div>
 
@@ -171,7 +249,7 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct })
                   }}
                   className="w-full text-xs bg-[#1a4332] hover:bg-[#123023] text-white font-black py-4 rounded-xl uppercase tracking-wider transition-all duration-300 active:scale-95 shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <span>Build custom box</span>
+                  <span>Shop Flavors • $10</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -203,15 +281,21 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct })
               Established in Norton, Ohio
             </div>
             <h2 className="text-4xl md:text-6xl font-serif-modern font-black italic text-forest leading-none uppercase tracking-tight">
-              {/* Our Passion, <br/> */}
-The Farm            </h2>
+              Our Passion, <br/>
+              Our Apiary.
+            </h2>
             <div className="h-[2px] w-20 bg-[#d9a520]"></div>
             
             <div className="space-y-6 text-stone-600 font-serif-modern text-lg italic leading-relaxed">
               <p>
-              At Jessica Farms, we produce raw honey and small-batch creamed honey from our hives in Norton, Ohio. We believe great honey speaks for itself, so we keep it simple—never overheating or over-processing it. We also enjoy sharing our passion for beekeeping through live observation hives and educational events, helping others discover the incredible world of honey bees.              </p>
-
-           
+                At Jessica Farms, beekeeping is more than a trade—it's our way of honoring the intricate and vital rhythm of nature. Nestled in our sunny pocket of Norton, Ohio, we watch our hives thrive on a vibrant palette of local wildflower clover, goldenrod, and basswood blooms.
+              </p>
+              <p>
+                We believe that pure, raw honey shouldn't be over-processed, boiled, or stripped of its natural beneficial pollens. That is why we harvest with extreme patience and whip our creamed honeys using cold-churn methods to preserve absolute flavor purity.
+              </p>
+              <p>
+                Beyond creating elegant products, we are deeply committed to community education. Through live observation hives and behind-the-scenes sharing, we hope to foster deep curiosity and love for these magnificent pollinators.
+              </p>
             </div>
           </div>
 
@@ -241,6 +325,92 @@ The Farm            </h2>
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* 4. FOLLOW OUR JOURNEY (YOUTUBE FEATURE) */}
+      <section id="youtube" className="max-w-6xl mx-auto px-4 scroll-mt-24">
+        <div className="bg-stone-900 rounded-[3.5rem] p-8 md:p-14 border border-stone-800 shadow-3xl text-white overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#d9a520]/5 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="grid lg:grid-cols-12 gap-12 items-center relative z-10">
+            {/* YouTube Details */}
+            <div className="lg:col-span-5 space-y-8">
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 bg-red-600/20 text-red-500 border border-red-600/35 rounded-full text-[10px] font-black uppercase tracking-widest">
+                <Youtube className="w-4.5 h-4.5 fill-red-500" />
+                Jessica Farms Studio
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="text-4xl md:text-5xl font-serif-modern font-black italic tracking-tight leading-tight uppercase">
+                  Follow Our Journey
+                </h2>
+                <p className="text-stone-300 font-serif-modern italic text-lg leading-relaxed">
+                  We document the beautiful, raw reality of small-batch farm life. Subscribe to peek behind the veil of our Norton apiary and follow our farm projects.
+                </p>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                <h3 className="text-xs font-black uppercase tracking-widest text-[#d9a520]">What We Feature:</h3>
+                <ul className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-xs font-serif-modern italic text-stone-300">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-3.5 h-3.5 text-[#d9a520] shrink-0" />
+                    <span>Honey Harvests</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-3.5 h-3.5 text-[#d9a520] shrink-0" />
+                    <span>Swarm Captures</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-3.5 h-3.5 text-[#d9a520] shrink-0" />
+                    <span>Queen Rearing</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-3.5 h-3.5 text-[#d9a520] shrink-0" />
+                    <span>Hive Inspections</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-3.5 h-3.5 text-[#d9a520] shrink-0" />
+                    <span>Farm Restoration</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-3.5 h-3.5 text-[#d9a520] shrink-0" />
+                    <span>Flavor Testing</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-4">
+                <a 
+                  href="https://www.youtube.com/@JessicaFarmsStudio" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2.5 bg-red-600 hover:bg-red-700 text-white font-black px-10 py-5 rounded-2xl text-xs uppercase tracking-widest shadow-xl transition-all hover:scale-[1.02] active:scale-95"
+                >
+                  <Youtube className="w-4 h-4 fill-white" />
+                  <span>Subscribe on YouTube</span>
+                  <ExternalLink className="w-3.5 h-3.5 opacity-60" />
+                </a>
+              </div>
+            </div>
+
+            {/* Video Preview */}
+            <div className="lg:col-span-7">
+              <div className="aspect-video bg-black rounded-[2rem] overflow-hidden border-4 border-stone-800 shadow-2xl relative group cursor-pointer">
+                <iframe 
+                  width="100%" 
+                  height="100%" 
+                  src="https://www.youtube.com/embed/YU3XNKGCLeg?autoplay=0&controls=1&modestbranding=1" 
+                  title="Jessica Farms Feature Video" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

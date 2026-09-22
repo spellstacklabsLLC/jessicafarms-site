@@ -79,122 +79,43 @@ async function startServer() {
       const { items, email } = req.body;
       const stripeClient = getStripe();
 
-      // Identify bundle items and regular honey items
-      const bundleItems: any[] = [];
-      const regularItems: any[] = [];
-
-      items.forEach((item: any) => {
-        if (item.id.startsWith("bundle-")) {
-          bundleItems.push({
-            id: item.id,
-            quantity: item.quantity,
-            name: item.name || "Mix & Match 3-Jar Box",
-            description: item.description || "Custom 3-jar honey bundle",
-            priceNumber: 34.99,
-          });
-        } else {
-          const product = PRODUCTS.find((p) => p.id === item.id);
-          if (!product) {
-            throw new Error(`Product with ID ${item.id} not found.`);
-          }
-          regularItems.push({
-            id: item.id,
-            quantity: item.quantity,
-            name: product.name,
-            description: product.description,
-            imageUrl: product.imageUrl,
-            priceNumber: product.priceNumber,
-          });
-        }
-      });
-
-      // Calculate target pricing for 3-jar boxes
-      // Each box of 3 is $34.99. We do not sell singles.
-      const totalRegularQty = regularItems.reduce((sum, item) => sum + item.quantity, 0);
-      const regularBaseSubtotalInCents = Math.round(regularItems.reduce((sum, item) => sum + (item.priceNumber * item.quantity), 0) * 100);
-
-      const bundlesOf3 = Math.floor(totalRegularQty / 3);
-      const targetRegularSubtotalInCents = Math.round((bundlesOf3 * 34.99) * 100);
-
-      // Construct line items
+      // Build Stripe line items: Hot Honey is $14.00, and all creamed honeys are $10.00 each
       const lineItems: any[] = [];
 
-      // Process bundleItems first
-      bundleItems.forEach((bItem) => {
-        const bundleDisplayName = bItem.description
-          ? `${bItem.name} — ${bItem.description.replace("Includes: ", "")}`
-          : bItem.name;
-
-        lineItems.push({
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: bundleDisplayName,
-              description: bItem.description,
-              images: [`${req.headers.origin}/assets/bundle-box.png`],
-            },
-            unit_amount: 3499, // $34.99
-          },
-          quantity: bItem.quantity,
-        });
-      });
-
-      // Process regular jars with bulk mix-and-match pricing ratio
-      if (regularItems.length > 0) {
-        const discountRatio = regularBaseSubtotalInCents > 0 ? targetRegularSubtotalInCents / regularBaseSubtotalInCents : 1;
-        let cumulativeCentsSum = 0;
-
-        const preparedRegularLines = regularItems.map((item) => {
-          const unitAmountInCents = Math.round(item.priceNumber * discountRatio * 100);
-          const lineTotal = unitAmountInCents * item.quantity;
-          cumulativeCentsSum += lineTotal;
-
-          return {
-            id: item.id,
-            quantity: item.quantity,
-            name: item.name,
-            description: item.description,
-            imageUrl: item.imageUrl,
-            unit_amount: unitAmountInCents,
-          };
-        });
-
-        // Rounding discrepancy adjustment
-        const discrepancy = targetRegularSubtotalInCents - cumulativeCentsSum;
-        if (discrepancy !== 0 && preparedRegularLines.length > 0) {
-          const first = preparedRegularLines[0];
-          if (first.quantity === 1) {
-            first.unit_amount += discrepancy;
-          } else {
-            const splitQty = first.quantity - 1;
-            preparedRegularLines.push({
-              id: first.id,
-              quantity: 1,
-              name: first.name,
-              description: first.description,
-              imageUrl: first.imageUrl,
-              unit_amount: first.unit_amount + discrepancy,
-            });
-            first.quantity = splitQty;
-          }
-        }
-
-        // Add regular lines to final lineItems
-        preparedRegularLines.forEach((item) => {
+      items.forEach((item: any) => {
+        if (item.id === "hot-honey" || item.id === "hot-honey-single") {
           lineItems.push({
             price_data: {
               currency: "usd",
               product_data: {
-                name: item.name,
-                images: [item.imageUrl.startsWith("/") ? `${req.headers.origin}${item.imageUrl}` : item.imageUrl],
-                description: item.description,
+                name: "Jessica Farms Hot Honey",
+                description: "Made with real honey, habanero & ghost peppers. Sweet heat with a serious kick.",
+                images: [`${req.headers.origin}/assets/hot-honey.jpg`],
               },
-              unit_amount: item.unit_amount,
+              unit_amount: 1400, // $14.00
             },
             quantity: item.quantity,
           });
-        });
-      }
+        } else {
+          const product = PRODUCTS.find((p) => p.id === item.id);
+          const name = product?.name || item.name || "Creamed Honey";
+          const description = product?.description || item.description || "Small-batch creamed honey (5oz jar)";
+          const imageUrl = product?.imageUrl || item.imageUrl || '/assets/regular-honey.jpg';
+
+          lineItems.push({
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name,
+                description,
+                images: [imageUrl.startsWith("http") ? imageUrl : `${req.headers.origin}${imageUrl}`],
+              },
+              unit_amount: 1000, // $10.00 each
+            },
+            quantity: item.quantity,
+          });
+        }
+      });
 
       const session = await stripeClient.checkout.sessions.create({
         payment_method_types: ["card"],
@@ -210,6 +131,22 @@ async function startServer() {
         phone_number_collection: {
           enabled: true,
         },
+        shipping_options: [
+          {
+            shipping_rate_data: {
+              type: "fixed_amount",
+              fixed_amount: {
+                amount: 999, // $9.99 flat rate shipping
+                currency: "usd",
+              },
+              display_name: "Standard Flat Rate Shipping",
+              delivery_estimate: {
+                minimum: { unit: "business_day", value: 3 },
+                maximum: { unit: "business_day", value: 7 },
+              },
+            },
+          },
+        ],
         success_url: `${req.headers.origin}/?success=true`,
         cancel_url: `${req.headers.origin}/?canceled=true`,
         metadata: {
@@ -219,9 +156,8 @@ async function startServer() {
             name: i.name,
             description: i.description
           }))),
-          bundle_flavors: items
-            .map((i: any) => i.description)
-            .filter(Boolean)
+          item_details: items
+            .map((i: any) => `${i.name} (${i.quantity}x)`)
             .join(" | ")
         }
       });
@@ -233,26 +169,338 @@ async function startServer() {
     }
   });
 
-// Vite middleware for development
-if (process.env.NODE_ENV !== "production") {
-  const vite = await createViteServer({
-    server: { middlewareMode: true },
-    appType: "spa",
-  });
-  app.use(vite.middlewares);
-} else {
-  const distPath = path.join(process.cwd(), "dist");
-  app.use(express.static(distPath));
+  // In-memory wholesale orders store so backend can track all retail orders & customer details
+  interface WholesaleOrderRecord {
+    id: string;
+    createdAt: string;
+    cases: number;
+    totalJars: number;
+    totalCents: number;
+    totalFormatted: string;
+    businessName: string;
+    contactName: string;
+    email: string;
+    phone: string;
+    taxId?: string;
+    shippingAddress: {
+      street: string;
+      aptSuite?: string;
+      city: string;
+      state: string;
+      zip: string;
+    };
+    notes?: string;
+    stripeSessionId?: string;
+    stripeCustomerId?: string;
+    status: "pending_checkout" | "completed";
+  }
 
-  // React SPA fallback
-  app.use((req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
-}
+  const wholesaleOrders: WholesaleOrderRecord[] = [];
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+  // API route to retrieve wholesale orders for the farm
+  app.get("/api/wholesale-orders", (req, res) => {
+    res.json(wholesaleOrders);
+  });
+
+  // Dedicated Wholesale Stripe Checkout Session Route
+  // IMPORTANT: Calculates and validates wholesale pricing on the backend.
+  app.post("/api/create-wholesale-checkout-session", async (req, res) => {
+    try {
+      const {
+        cases,
+        businessName,
+        contactName,
+        email,
+        phone,
+        taxId,
+        shippingAddress,
+        notes,
+      } = req.body;
+
+      // Backend validation of case quantity
+      const numCases = Math.floor(Number(cases));
+      if (isNaN(numCases) || numCases < 1) {
+        return res.status(400).json({ error: "Order must contain at least 1 case." });
+      }
+      if (numCases > 500) {
+        return res.status(400).json({ error: "For orders exceeding 500 cases, please contact the farm directly." });
+      }
+
+      // Backend validation of required fields
+      if (!businessName || !businessName.trim()) {
+        return res.status(400).json({ error: "Business name is required." });
+      }
+      if (!contactName || !contactName.trim()) {
+        return res.status(400).json({ error: "Contact name is required." });
+      }
+      if (!email || !email.trim() || !email.includes("@")) {
+        return res.status(400).json({ error: "A valid email address is required." });
+      }
+      if (!phone || !phone.trim()) {
+        return res.status(400).json({ error: "Phone number is required." });
+      }
+      if (
+        !shippingAddress ||
+        !shippingAddress.street ||
+        !shippingAddress.city ||
+        !shippingAddress.state ||
+        !shippingAddress.zip
+      ) {
+        return res.status(400).json({ error: "Full shipping address is required." });
+      }
+
+      // Exact Backend Wholesale Calculations (Never trusting client-supplied prices)
+      const JARS_PER_CASE = 20;
+      const CASE_PRICE_CENTS = 13980; // $139.80 per case ($6.99/jar * 20 jars)
+      const totalJars = numCases * JARS_PER_CASE;
+      const totalCents = numCases * CASE_PRICE_CENTS;
+      const subtotalFormatted = (totalCents / 100).toFixed(2);
+
+      const orderId = `WHOLESALE-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+
+      // Create new backend order record with full contact details and shipping info
+      const orderRecord: WholesaleOrderRecord = {
+        id: orderId,
+        createdAt: new Date().toISOString(),
+        cases: numCases,
+        totalJars,
+        totalCents,
+        totalFormatted: `$${subtotalFormatted}`,
+        businessName: businessName.trim(),
+        contactName: contactName.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        taxId: (taxId || "").trim() || undefined,
+        shippingAddress: {
+          street: shippingAddress.street.trim(),
+          aptSuite: (shippingAddress.aptSuite || "").trim(),
+          city: shippingAddress.city.trim(),
+          state: shippingAddress.state.trim().toUpperCase(),
+          zip: shippingAddress.zip.trim(),
+        },
+        notes: (notes || "").trim(),
+        status: "pending_checkout",
+      };
+
+      wholesaleOrders.unshift(orderRecord);
+
+      console.log(`[Backend Wholesale Order Registered]`);
+      console.log(`  ID: ${orderRecord.id}`);
+      console.log(`  Business: ${orderRecord.businessName}${orderRecord.taxId ? ` (Tax/EIN: ${orderRecord.taxId})` : ""}`);
+      console.log(`  Contact: ${orderRecord.contactName} | Phone: ${orderRecord.phone} | Email: ${orderRecord.email}`);
+      console.log(`  Shipping: ${orderRecord.shippingAddress.street} ${orderRecord.shippingAddress.aptSuite}, ${orderRecord.shippingAddress.city}, ${orderRecord.shippingAddress.state} ${orderRecord.shippingAddress.zip}`);
+      console.log(`  Quantity: ${orderRecord.cases} Cases (${orderRecord.totalJars} Jars) — Total: ${orderRecord.totalFormatted}`);
+      if (orderRecord.notes) {
+        console.log(`  Notes: ${orderRecord.notes}`);
+      }
+
+      const stripeClient = getStripe();
+      const origin = req.headers.origin || `http://localhost:${PORT}`;
+
+      const fullShippingAddressString = `${shippingAddress.street.trim()}${shippingAddress.aptSuite ? " " + shippingAddress.aptSuite.trim() : ""}, ${shippingAddress.city.trim()}, ${shippingAddress.state.trim().toUpperCase()} ${shippingAddress.zip.trim()}`;
+
+      // Optionally create/attach Stripe customer with full shipping and contact information
+      let stripeCustomerId: string | undefined;
+      try {
+        const customer = await stripeClient.customers.create({
+          name: `${businessName.trim()} (Attn: ${contactName.trim()})`,
+          email: email.trim(),
+          phone: phone.trim(),
+          address: {
+            line1: shippingAddress.street.trim(),
+            line2: (shippingAddress.aptSuite || "").trim() || undefined,
+            city: shippingAddress.city.trim(),
+            state: shippingAddress.state.trim().toUpperCase(),
+            postal_code: shippingAddress.zip.trim(),
+            country: "US",
+          },
+          shipping: {
+            name: `${businessName.trim()} (Attn: ${contactName.trim()})`,
+            phone: phone.trim(),
+            address: {
+              line1: shippingAddress.street.trim(),
+              line2: (shippingAddress.aptSuite || "").trim() || undefined,
+              city: shippingAddress.city.trim(),
+              state: shippingAddress.state.trim().toUpperCase(),
+              postal_code: shippingAddress.zip.trim(),
+              country: "US",
+            },
+          },
+          metadata: {
+            business_name: businessName.trim(),
+            contact_name: contactName.trim(),
+            contact_phone: phone.trim(),
+            contact_email: email.trim(),
+            tax_id: (taxId || "").trim() || "N/A",
+            wholesale_order_id: orderId,
+            shipping_full_address: fullShippingAddressString,
+            delivery_notes: (notes || "").trim().slice(0, 500) || "None",
+          },
+        });
+        stripeCustomerId = customer.id;
+        orderRecord.stripeCustomerId = stripeCustomerId;
+      } catch (custError) {
+        console.warn("Could not create Stripe customer record, falling back to session email:", custError);
+      }
+
+      const session = await stripeClient.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: "Jessica Farms Hot Honey — Wholesale Case (20 Jars)",
+                description: `Wholesale order for ${businessName.trim()}: ${numCases} case${numCases > 1 ? "s" : ""} (${totalJars} total 5oz jars) at $6.99/jar ($139.80/case). Norton, OH.`,
+                images: [`${origin}/assets/hot-honey.jpg`],
+              },
+              unit_amount: CASE_PRICE_CENTS,
+            },
+            quantity: numCases,
+          },
+        ],
+        mode: "payment", // Full wholesale payment — no consignment, invoicing, or net terms
+        ...(stripeCustomerId
+          ? {
+              customer: stripeCustomerId,
+              customer_update: {
+                name: "auto",
+                address: "auto",
+                shipping: "auto",
+              },
+            }
+          : { customer_email: email.trim() }),
+        phone_number_collection: {
+          enabled: true,
+        },
+        payment_intent_data: {
+          shipping: {
+            name: `${businessName.trim()} (Attn: ${contactName.trim()})`,
+            phone: phone.trim(),
+            address: {
+              line1: shippingAddress.street.trim(),
+              line2: (shippingAddress.aptSuite || "").trim() || undefined,
+              city: shippingAddress.city.trim(),
+              state: shippingAddress.state.trim().toUpperCase(),
+              postal_code: shippingAddress.zip.trim(),
+              country: "US",
+            },
+          },
+          description: `Wholesale Order: ${businessName.trim()} (${numCases} case${numCases > 1 ? "s" : ""}, ${totalJars} jars)`,
+          metadata: {
+            order_id: orderId,
+            order_type: "wholesale",
+            business_name: businessName.trim(),
+            contact_name: contactName.trim(),
+            contact_phone: phone.trim(),
+            contact_email: email.trim(),
+            tax_id: (taxId || "").trim() || "N/A",
+            shipping_name: `${businessName.trim()} (Attn: ${contactName.trim()})`,
+            shipping_phone: phone.trim(),
+            shipping_full_address: fullShippingAddressString,
+            shipping_street: shippingAddress.street.trim(),
+            shipping_apt_suite: (shippingAddress.aptSuite || "").trim() || "N/A",
+            shipping_city: shippingAddress.city.trim(),
+            shipping_state: shippingAddress.state.trim().toUpperCase(),
+            shipping_zip: shippingAddress.zip.trim(),
+            shipping_country: "US",
+            delivery_notes: (notes || "").trim().slice(0, 500) || "None",
+            case_quantity: String(numCases),
+            jar_quantity: String(totalJars),
+            total_paid: `$${subtotalFormatted}`,
+          },
+        },
+        invoice_creation: {
+          enabled: true,
+          invoice_data: {
+            description: `Jessica Farms Wholesale Order #${orderId} - ${numCases} Case${numCases > 1 ? "s" : ""} (${totalJars} Jars)`,
+            metadata: {
+              wholesale_order_id: orderId,
+              business_name: businessName.trim(),
+              contact_name: contactName.trim(),
+              shipping_address: fullShippingAddressString,
+            },
+            custom_fields: [
+              { name: "Business Name", value: businessName.trim().slice(0, 30) },
+              { name: "Contact", value: `${contactName.trim()} (${phone.trim()})`.slice(0, 30) },
+            ],
+            footer: "Jessica Farms Apiary • Norton, OH. Questions? Contact wholesale@jessicafarms.com",
+          },
+        },
+        success_url: `${origin}/wholesale?success=true&session_id={CHECKOUT_SESSION_ID}&cases=${numCases}&jars=${totalJars}&business=${encodeURIComponent(businessName.trim())}`,
+        cancel_url: `${origin}/wholesale?canceled=true`,
+        metadata: {
+          order_id: orderId,
+          order_type: "wholesale",
+          business_name: businessName.trim(),
+          contact_name: contactName.trim(),
+          contact_phone: phone.trim(),
+          contact_email: email.trim(),
+          tax_id: (taxId || "").trim() || "N/A",
+          shipping_name: `${businessName.trim()} (Attn: ${contactName.trim()})`,
+          shipping_phone: phone.trim(),
+          shipping_full_address: fullShippingAddressString,
+          shipping_street: shippingAddress.street.trim(),
+          shipping_apt_suite: (shippingAddress.aptSuite || "").trim() || "N/A",
+          shipping_city: shippingAddress.city.trim(),
+          shipping_state: shippingAddress.state.trim().toUpperCase(),
+          shipping_zip: shippingAddress.zip.trim(),
+          shipping_country: "US",
+          delivery_notes: (notes || "").trim().slice(0, 500) || "None",
+          case_quantity: String(numCases),
+          jar_quantity: String(totalJars),
+          price_per_jar: "$6.99",
+          price_per_case: "$139.80",
+          total_paid: `$${subtotalFormatted}`,
+        },
+      });
+
+      orderRecord.stripeSessionId = session.id;
+
+      res.json({ url: session.url });
+    } catch (error) {
+      console.error("Stripe Wholesale Error:", error);
+      res.status(500).json({
+        error: error instanceof Error ? error.message : "Failed to create wholesale checkout session",
+      });
+    }
+  });
+
+  // Wholesale Session Status Route (to display verified receipt details on confirmation)
+  app.get("/api/wholesale-session/:sessionId", async (req, res) => {
+    try {
+      const stripeClient = getStripe();
+      const session = await stripeClient.checkout.sessions.retrieve(req.params.sessionId);
+      res.json({
+        id: session.id,
+        payment_status: session.payment_status,
+        customer_email: session.customer_email || session.customer_details?.email,
+        amount_total: session.amount_total,
+        metadata: session.metadata,
+      });
+    } catch (error) {
+      res.status(404).json({ error: "Session not found" });
+    }
+  });
+
+  // Vite middleware for development
+  if (process.env.NODE_ENV !== "production") {
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa",
+    });
+    app.use(vite.middlewares);
+  } else {
+    const distPath = path.join(process.cwd(), "dist");
+    app.use(express.static(distPath));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(distPath, "index.html"));
+    });
+  }
+
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
 }
 
 startServer();

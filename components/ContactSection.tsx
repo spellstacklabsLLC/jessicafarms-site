@@ -23,7 +23,7 @@ const ContactSection: React.FC = () => {
     setStatus('sending');
     try {
       // Formspree submission
-      const formspreeId = getEnvVar('VITE_FORMSPREE_ID') || 'your_formspree_id';
+      const formspreeId = getEnvVar('VITE_FORMSPREE_ID') || 'mnjgvnee';
       const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -93,7 +93,7 @@ const ContactSection: React.FC = () => {
           <div className="pt-8 opacity-40">
             <div className="flex gap-4 grayscale h-10 items-center">
               <img src="/assets/honey-icon.png" alt="Honey" className="h-full object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
-              <img src="/assets/logo.jpg" alt="Bee" className="h-full object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
+              <img src="/assets/logo-placeholder.png" alt="Bee" className="h-full object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
               <img src="/assets/wheat-icon.png" alt="Wheat" className="h-full object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
             </div>
           </div>

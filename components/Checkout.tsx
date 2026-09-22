@@ -15,9 +15,9 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
   const totalBoxes = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const subtotal = items.reduce((sum, item) => sum + (item.priceNumber * item.quantity), 0);
-  const SHIPPING_FEE = 0.00;
-  const total = subtotal + SHIPPING_FEE;
   const hasItems = totalBoxes > 0;
+  const SHIPPING_FEE = hasItems ? 9.99 : 0.00;
+  const total = subtotal + SHIPPING_FEE;
 
   const handleStripeCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,9 +68,9 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
       <div className="bg-white p-6 md:p-10 rounded-[3rem] shadow-2xl border border-forest/10 relative overflow-hidden">
         {/* Abstract vintage lines or secure labels */}
         <div className="absolute top-0 right-0 p-6 flex gap-2">
-          {/* <div className="w-10 h-6 bg-stone-50 rounded-md border border-stone-100 flex items-center justify-center text-[8px] font-black opacity-40">VISA</div>
+          <div className="w-10 h-6 bg-stone-50 rounded-md border border-stone-100 flex items-center justify-center text-[8px] font-black opacity-40">VISA</div>
           <div className="w-10 h-6 bg-stone-50 rounded-md border border-stone-100 flex items-center justify-center text-[8px] font-black opacity-40">MC</div>
-          <div className="w-10 h-6 bg-stone-50 rounded-md border border-stone-100 flex items-center justify-center text-[8px] font-black opacity-40">AMEX</div> */}
+          <div className="w-10 h-6 bg-stone-50 rounded-md border border-stone-100 flex items-center justify-center text-[8px] font-black opacity-40">AMEX</div>
         </div>
 
         <h2 className="text-2xl md:text-3xl font-serif-modern font-black italic text-forest uppercase tracking-tight mb-6">Order Summary</h2>
@@ -94,7 +94,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
                   <div>
                     <h4 className="font-black text-sm text-forest uppercase tracking-tight">{item.name}</h4>
                     <p className="text-[10px] text-amber-600 font-sans uppercase tracking-wider font-extrabold mt-0.5">
-                      3-Jar Gift Box
+                      {item.id.includes('hot-honey') || item.priceNumber === 14 ? 'Hot Honey • $14.00' : 'Creamed Honey • $10.00'}
                     </p>
                     
                     {/* Quantity adjustments */}
@@ -121,7 +121,9 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
                 </div>
                 <div className="text-right">
                   <span className="font-sans text-[9px] font-black uppercase text-stone-300 block tracking-widest leading-none">Selected</span>
-                  <span className="font-serif-modern text-xs text-stone-600 font-black italic block mt-1">{item.quantity} Box{item.quantity > 1 ? 'es' : ''}</span>
+                  <span className="font-serif-modern text-xs text-stone-600 font-black italic block mt-1">
+                    {item.quantity} Jar{item.quantity > 1 ? 's' : ''}
+                  </span>
                 </div>
               </div>
             ))}
@@ -134,7 +136,7 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
                 </div>
               ) : (
                 <div className="p-3 bg-green-500/10 text-green-800 text-xs rounded-[1.25rem] border border-green-500/20 text-center font-black uppercase tracking-widest text-[9.5px]">
-                  🎉 Box Complete! {totalBoxes} x 3-Jar Box{totalBoxes > 1 ? 'es' : ''} successfully packed.
+                  🎉 Ready for checkout! {totalBoxes} item{totalBoxes > 1 ? 's' : ''} in cart.
                 </div>
               )}
             </div>
@@ -143,13 +145,13 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
           {/* Pricing Summary */}
           <div className="space-y-2 px-1">
             <div className="flex justify-between items-center text-sm">
-              <span className="font-serif-modern italic text-stone-500">Subtotal ({totalBoxes} x 3-Jar Box{totalBoxes > 1 ? 'es' : ''})</span>
+              <span className="font-serif-modern italic text-stone-500">Subtotal ({totalBoxes} item{totalBoxes > 1 ? 's' : ''})</span>
               <span className="font-black text-forest">${subtotal.toFixed(2)}</span>
             </div>
 
             <div className="flex justify-between items-center text-sm">
-              <span className="font-serif-modern italic text-stone-500">Shipping</span>
-              <span className="font-black text-honey uppercase tracking-wider text-xs bg-honey/10 px-2.5 py-0.5 rounded-md">FREE</span>
+              <span className="font-serif-modern italic text-stone-500">Shipping (Flat Rate)</span>
+              <span className="font-black text-forest">${SHIPPING_FEE.toFixed(2)}</span>
             </div>
 
             <div className="pt-4 mt-2 border-t-2 border-forest/10 flex justify-between items-center text-2xl">
@@ -201,13 +203,14 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
 
           {/* Boutique Small-Batch Processing Notice */}
           <div className="text-center pt-3 pb-1">
-          <p className="text-[13px] md:text-[14px] text-stone-600 font-serif-modern leading-relaxed tracking-wide">              ✦ Packed fresh in small batches. Ships within 7 business days. ✦
+            <p className="text-[10px] md:text-[11px] text-stone-500 font-serif-modern italic opacity-80 leading-relaxed tracking-wide select-none">
+              ✦ Packed fresh in small batches. Ships within 7–10 business days. ✦
             </p>
           </div>
 
           <div className="pt-4 border-t border-stone-100 flex flex-col items-center gap-2">
             <p className="text-[10px] text-center text-stone-500 font-typewriter uppercase tracking-widest max-w-sm leading-relaxed font-semibold">
-              {/* Your transaction is secure and encrypted. We trust Stripe to process payments safely. */}
+              Your transaction is secure and encrypted. We trust Stripe to process payments safely.
             </p>
             <div className="flex gap-4 opacity-20 grayscale h-8 items-center">
               <img src="/assets/secure-lock.png" alt="Secure" className="h-full object-contain" referrerPolicy="no-referrer" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />

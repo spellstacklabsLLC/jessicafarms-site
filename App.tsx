@@ -1,13 +1,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Page, Product, CartItem } from './types';
-import { PRODUCTS, INTRO_VIDEO, CONFIG, COMING_SOON_PRODUCTS } from './constants';
+import { PRODUCTS, INTRO_VIDEO, CONFIG, COMING_SOON_PRODUCTS, HOT_HONEY_PRODUCT } from './constants';
 import GamesSection from './components/Games';
 import Checkout from './components/Checkout';
 import InquiryModal from './components/InquiryModal';
 import ContactSection from './components/ContactSection';
 import Homepage from './components/Homepage';
-import { ShoppingCart, ChevronDown, Trash2, Volume2 } from 'lucide-react';
+import WholesaleOrder from './components/WholesaleOrder';
+import { ShoppingCart, ShoppingBag, ChevronDown, Trash2, Volume2, Flame, Sparkles, ShieldCheck, Plus, Minus, ArrowRight, Check } from 'lucide-react';
 
 const BeeItem: React.FC<{ scale: number }> = ({ scale }) => {
   const [pos, setPos] = useState({ x: Math.random() * 80 + 10, y: Math.random() * 80 + 10 });
@@ -353,7 +354,15 @@ const ShopFlybyBee: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
 };
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState<Page>(Page.Home);
+  const [currentPage, setCurrentPage] = useState<Page>(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.replace(/\/$/, '').toLowerCase();
+      if (path === '/wholesale' || path === '/wholesale-order') {
+        return Page.WholesaleOrder;
+      }
+    }
+    return Page.Home;
+  });
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -384,64 +393,10 @@ const App: React.FC = () => {
     }, 350);
   };
   
-  // Custom 3-Jar Box states
   const [selectedFlavor, setSelectedFlavor] = useState<Product>(PRODUCTS[0]);
-  const [bundleSlots, setBundleSlots] = useState<(Product | null)[]>([null, null, null]);
-  const [boxPopupExpanded, setBoxPopupExpanded] = useState(false);
 
-  const addToBundleSlots = (product: Product) => {
-    const firstEmptyIndex = bundleSlots.findIndex(slot => slot === null);
-    if (firstEmptyIndex !== -1) {
-      const updatedSlots = [...bundleSlots];
-      updatedSlots[firstEmptyIndex] = product;
-      setBundleSlots(updatedSlots);
-    } else {
-      // If already full, replace the last slot to sustain smooth assembly
-      const updatedSlots = [...bundleSlots];
-      updatedSlots[2] = product;
-      setBundleSlots(updatedSlots);
-    }
-    setBoxPopupExpanded(true);
-  };
-
-  const removeFromBundleSlot = (index: number) => {
-    const updatedSlots = [...bundleSlots];
-    updatedSlots[index] = null;
-    setBundleSlots(updatedSlots);
-  };
-
-  const clearBundleSlots = () => {
-    setBundleSlots([null, null, null]);
-  };
-
-  const addCustomBoxToCart = () => {
-    const filledSlots = bundleSlots.filter((slot): slot is Product => slot !== null);
-    if (filledSlots.length !== 3) return;
-
-    const sortedIds = filledSlots.map(f => f.id).sort();
-    const bundleKey = `bundle-${sortedIds.join('-')}`;
-
-    const countMap: Record<string, number> = {};
-    filledSlots.forEach(slot => {
-      countMap[slot.name] = (countMap[slot.name] || 0) + 1;
-    });
-    const subdescription = Object.entries(countMap)
-      .map(([name, qty]) => `${qty}x ${name.replace(' Creamed Honey', '').replace(' Honey Chilli Infusion', '')}`)
-      .join(', ');
-
-    const customBoxProduct: Product = {
-      id: bundleKey,
-      name: 'Mix & Match 3-Jar Gilded Box',
-      price: '$34.99',
-      priceNumber: 34.99,
-      description: `Premium woodcrate bundle with: ${subdescription}.`,
-      category: 'hive',
-      imageUrl: '/assets/custom-bundle.png', // Fallback vector will trigger on error
-    };
-
-    addToCart(customBoxProduct);
-    clearBundleSlots();
-  };
+  // Hot Honey Market Stand state
+  const [hotHoneyQty, setHotHoneyQty] = useState(1);
 
   // TV warmup timer that handles initial load and manual toggle-on cycles
   useEffect(() => {
@@ -492,6 +447,21 @@ const App: React.FC = () => {
   }, [tvVolume, tvOn, tvWarmingUp]);
 
   useEffect(() => {
+    // Canonicalize /wholesale-order to /wholesale
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.replace(/\/$/, '').toLowerCase();
+      if (path === '/wholesale-order') {
+        window.history.replaceState({}, '', '/wholesale' + window.location.search);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    // If we're on the dedicated wholesale route, let WholesaleOrder component manage its params
+    const path = window.location.pathname.replace(/\/$/, '').toLowerCase();
+    if (path === '/wholesale' || path === '/wholesale-order') {
+      return;
+    }
     const query = new URLSearchParams(window.location.search);
     if (query.get('success')) {
       setOrderComplete(true);
@@ -505,6 +475,19 @@ const App: React.FC = () => {
       window.history.replaceState({}, '', window.location.pathname);
     }
   }, []);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.replace(/\/$/, '').toLowerCase();
+      if (path === '/wholesale' || path === '/wholesale-order') {
+        setCurrentPage(Page.WholesaleOrder);
+      } else if (currentPage === Page.WholesaleOrder) {
+        setCurrentPage(Page.Home);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [currentPage]);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -524,8 +507,8 @@ const App: React.FC = () => {
     }
   }, [currentPage]);
 
-  const addToCart = (product: Product) => {
-    setLastAddedName(product.name);
+  const addToCart = (product: Product, quantity: number = 1) => {
+    setLastAddedName(quantity > 1 ? `${quantity}x ${product.name}` : product.name);
     setShowAddedToast(true);
     setTimeout(() => {
       setShowAddedToast(false);
@@ -533,9 +516,9 @@ const App: React.FC = () => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item);
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity }];
     });
   };
 
@@ -556,6 +539,11 @@ const App: React.FC = () => {
   const NavLink = ({ page, label, emoji }: { page: Page, label: string, emoji: string }) => (
     <button 
       onClick={() => {
+        if (page === Page.WholesaleOrder) {
+          window.history.pushState({}, '', '/wholesale-order');
+        } else if (currentPage === Page.WholesaleOrder) {
+          window.history.pushState({}, '', '/');
+        }
         setCurrentPage(page);
         setMobileMenuOpen(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -570,6 +558,18 @@ const App: React.FC = () => {
       <span>{label}</span>
     </button>
   );
+
+  if (currentPage === Page.WholesaleOrder) {
+    return (
+      <WholesaleOrder 
+        onBackToSite={() => {
+          window.history.pushState({}, '', '/');
+          setCurrentPage(Page.Home);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-honey selection:text-white">
@@ -674,6 +674,17 @@ const App: React.FC = () => {
             <Homepage 
               setCurrentPage={setCurrentPage} 
               onInquireProduct={(product) => setActiveInquiry(product)} 
+              onShopHotHoney={() => {
+                setCurrentPage(Page.Shop);
+                setTimeout(() => {
+                  const el = document.getElementById('marketstand-hot-honey');
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }, 150);
+              }}
             />
           </div>
         )}
@@ -870,19 +881,13 @@ const App: React.FC = () => {
 
             {/* STICKY FLOATING SHOPPING CART FAST CHECKOUT */}
             {CONFIG.enableStore && currentPage !== Page.Checkout && cartCount > 0 && (
-              <div className={`fixed z-[130] font-sans antialiased animate-in fade-in duration-300 right-6 transition-all duration-300 ${
-                bundleSlots.some(s => s !== null) 
-                  ? boxPopupExpanded 
-                    ? 'bottom-[370px]' 
-                    : 'bottom-[76px]' 
-                  : 'bottom-6'
-              }`}>
+              <div className="fixed bottom-6 right-6 z-[130] font-sans antialiased animate-in fade-in duration-300">
                 <button
                   onClick={() => {
                     setCurrentPage(Page.Checkout);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }}
-                  className="flex items-center gap-2.5 bg-[#1a4332] hover:bg-[#20533e] text-white border-2 border-[#d9a520] rounded-full p-3.5 px-5 shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 group"
+                  className="flex items-center gap-2.5 bg-[#1a4332] hover:bg-[#20533e] text-white border-2 border-[#d9a520] rounded-full p-3.5 px-5 shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 group cursor-pointer"
                 >
                   <div className="relative">
                     <ShoppingCart className="w-4.5 h-4.5 text-[#d9a520] group-hover:scale-110" />
@@ -904,7 +909,7 @@ const App: React.FC = () => {
                 <div className="bg-[#1a4332] text-[#fdfcf8] p-5 rounded-[2rem] shadow-2xl border-4 border-[#d9a520] flex items-center gap-4">
                   <span className="text-2xl">🍯</span>
                   <div className="flex-1">
-                    <h5 className="font-black uppercase text-[10px] tracking-widest text-[#d9a520]">Added to Jar Collection!</h5>
+                    <h5 className="font-black uppercase text-[10px] tracking-widest text-[#d9a520]">Added to Cart!</h5>
                     <p className="text-[11px] font-serif-modern italic opacity-90 leading-normal">{lastAddedName} is in your cart.</p>
                   </div>
                   <button 
@@ -914,156 +919,6 @@ const App: React.FC = () => {
                     Checkout
                   </button>
                 </div>
-              </div>
-            )}
-
-            {/* FLOATING BOX BUILDER POP-UP */}
-            {bundleSlots.some(s => s !== null) && (
-              <div className="fixed bottom-6 right-6 z-[140] w-[340px] max-w-[calc(100vw-2rem)] font-sans antialiased">
-                {boxPopupExpanded ? (
-                  /* EXPANDED PANEL VIEW */
-                  <div className="bg-[#100c0acc]/90 backdrop-blur-md border-2 border-[#d9a520]/70 text-white rounded-[2rem] p-5 shadow-2xl flex flex-col space-y-4 animate-in slide-in-from-bottom-5 duration-300">
-                    
-                    {/* Header */}
-                    <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">📦</span>
-                        <div>
-                          <h5 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#d9a520] leading-none text-left">Mix & Match</h5>
-                          <p className="text-[8px] uppercase tracking-wider text-stone-400 mt-0.5 font-mono text-left">3-Jar Gift Box</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 font-sans">
-                        <button 
-                          onClick={() => setBoxPopupExpanded(false)} 
-                          className="flex items-center gap-1 bg-white/5 hover:bg-white/12 text-stone-400 hover:text-white px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest transition-all shadow-sm"
-                          title="Minimize Panel"
-                        >
-                          <ChevronDown className="w-3 h-3 text-[#d9a520]" />
-                          <span>Minimize</span>
-                        </button>
-                        <button 
-                          onClick={clearBundleSlots} 
-                          className="flex items-center gap-1 bg-red-950/20 hover:bg-red-900/40 text-red-500 hover:text-red-400 px-2 py-1 rounded-full text-[9px] font-bold uppercase transition-all shadow-sm"
-                          title="Clear Box"
-                        >
-                          <Trash2 className="w-3 h-3 text-red-450" />
-                          <span>Clear</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Stated Price Info */}
-                    <div className="bg-white/[0.04] border border-white/5 rounded-xl p-2.5 flex justify-between items-center text-left">
-                      <div>
-                        <span className="text-[7.5px] uppercase font-black text-[#d9a520] tracking-widest block leading-none">SPECIAL COMBINATION OFFER</span>
-                        <span className="text-[11px] font-bold font-serif-modern italic text-stone-200 mt-1 block">Any 3 flavors for only $34.99!</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xs font-black text-amber-500 block leading-none">$34.99</span>
-                        <span className="text-[6.5px] font-mono text-stone-400 uppercase tracking-widest block mt-0.5">Free Shipping</span>
-                      </div>
-                    </div>
-
-                    {/* Visual 3 Compartments inside POPUP */}
-                    <div className="grid grid-cols-3 gap-3 py-1">
-                      {bundleSlots.map((slot, index) => {
-                        return (
-                          <div 
-                            key={index} 
-                            className={`aspect-square rounded-2xl border flex flex-col items-center justify-center p-2 relative transition-all duration-300 shadow-sm
-                              ${slot 
-                                ? 'bg-amber-950/45 border-[#d9a520]/60 shadow-inner' 
-                                : 'bg-white/5 border-dashed border-white/10 hover:border-white/20'
-                              }`}
-                          >
-                            {slot ? (
-                              <>
-                                <button 
-                                  onClick={() => removeFromBundleSlot(index)} 
-                                  className="absolute -top-1 -right-1 w-4 h-4 bg-red-950/90 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-[8px] font-black transition-colors z-10 shadow"
-                                  title="Remove"
-                                >
-                                  ✕
-                                </button>
-                                <span className="text-sm select-none mb-1">🍯</span>
-                                <div className="text-center w-full px-0.5">
-                                  <span className="text-[7.5px] block font-black uppercase text-stone-100 truncate leading-none">
-                                    {slot.name.replace(' Creamed Honey', '').replace(' Honey Chilli Infusion', '')}
-                                  </span>
-                                </div>
-                              </>
-                            ) : (
-                              <div className="flex flex-col items-center justify-center w-full text-center p-1 opacity-55">
-                                <span className="text-[#d9a520]/75 font-mono text-sm leading-none font-bold">+</span>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* CTA button inside POPUP */}
-                    <div>
-                      {bundleSlots.filter(s => s !== null).length === 3 ? (
-                        <button 
-                          onClick={() => {
-                            addCustomBoxToCart();
-                            setBoxPopupExpanded(false);
-                          }}
-                          className="w-full bg-[#d9a520] hover:bg-[#c4951b] text-[#1a4332] font-black text-[9px] uppercase tracking-[0.2em] py-3.5 rounded-xl shadow-lg transition-all duration-300 active:scale-95 animate-pulse"
-                        >
-                          📥 Add Completed Box • $34.99
-                        </button>
-                      ) : (
-                        <div className="text-center py-2.5 bg-white/5 rounded-xl text-stone-400 font-serif-modern text-[8.5px] italic">
-                          Choose {3 - bundleSlots.filter(s => s !== null).length} more to lock in gift pack!
-                        </div>
-                      )}
-                    </div>
-
-                  </div>
-                ) : (
-                  /* MINIMIZED COMPACT VIEW */
-                  <button 
-                    onClick={() => setBoxPopupExpanded(true)}
-                    className="w-full bg-[#100c0acc]/90 backdrop-blur-md border-2 border-[#d9a520]/70 hover:border-[#d9a520] text-white rounded-full p-3 px-4 shadow-2xl flex items-center justify-between gap-4 transition-all duration-300 cursor-pointer active:scale-95 animate-in fade-in zoom-in-95 hover:bg-[#15110fe6]"
-                  >
-                    <div className="flex items-center gap-3">
-                      {/* Box progress icon wrapper */}
-                      <div className="relative">
-                        <span className="text-xl block">📦</span>
-                        <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-amber-500 text-[#100c0a] rounded-full flex items-center justify-center text-[8px] font-black border border-[#100c0a]">
-                          {bundleSlots.filter(s => s !== null).length}
-                        </div>
-                      </div>
-
-                      <div className="text-left leading-none space-y-0.5">
-                        <div className="text-[8.5px] font-black uppercase tracking-wider text-[#d9a520]">My Gift Box</div>
-                        <div className="text-[7.5px] text-stone-400 font-mono uppercase tracking-widest font-black">
-                          {bundleSlots.filter(s => s !== null).length}/3 Jars Added
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Compact 3-Slot Fills representation */}
-                    <div className="flex gap-1 items-center justify-end bg-black/40 px-2 py-1 rounded-full border border-white/5">
-                      {bundleSlots.map((slot, sIdx) => {
-                        const isFilled = slot !== null;
-                        return (
-                          <div 
-                            key={sIdx} 
-                            className={`w-3.5 h-3.5 rounded-full transition-all duration-300
-                              ${isFilled 
-                                ? 'bg-amber-500 ring-2 ring-[#d9a520]/40 animate-pulse' 
-                                : 'bg-stone-800'
-                              }`}
-                          />
-                        );
-                      })}
-                    </div>
-                  </button>
-                )}
               </div>
             )}
 
@@ -1358,44 +1213,39 @@ const App: React.FC = () => {
                       <div className="retro-tv-shadow-stand w-[85%] h-5 bg-stone-950/55 blur-md rounded-full mt-1 lg:-mt-2"></div>
                     </div>
 
-                    {/* RIGHT COLUMN: SLEEK MIX & MATCH FLYER EXPLAINER COLUMN (Col-span 5) */}
+                    {/* RIGHT COLUMN: CREAMED HONEY ARTISAN SHOWCASE (Col-span 5) */}
                     <div className="vintage-tv-right-column col-span-12 lg:col-span-5 relative w-full mt-8 lg:mt-0 self-auto lg:self-stretch bg-[#0a1612]/95 border border-[#d9a520]/45 p-6 md:p-8 rounded-[2rem] shadow-2xl flex flex-col justify-between text-white backdrop-blur-md h-auto transition-all duration-500 lg:hover:scale-105 hover:shadow-[0_25px_60px_rgba(217,165,32,0.25)] hover:border-[#d9a520]/80 ease-out z-10 lg:hover:z-20 max-w-[480px] lg:max-w-none mx-auto space-y-4">
                       
-                      {/* Premium Placeholder Image from Custom-Bundle */}
+                      {/* Premium Image */}
                       <div className="relative w-full h-48 md:h-52 rounded-2xl overflow-hidden border-2 border-[#d9a520]/50 bg-black/10 shadow-2xl transition-all duration-300 group-hover:border-[#d9a520] select-none">
                         <img 
-                          src="/assets/custom-bundle.png" 
-                          alt="Mix & Match 3-Jar Box" 
+                          src="/assets/regular-honey.jpg" 
+                          alt="Jessica Farms Creamed Honey" 
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter brightness-105 contrast-105 saturate-110"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'https://picsum.photos/seed/honeybox/400/300';
+                            (e.target as HTMLImageElement).src = 'https://picsum.photos/seed/honeyjar/400/300';
                           }}
                         />
+                        <div className="absolute top-3 left-3 bg-[#d9a520] text-[#1a4332] text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-md">
+                          Handcrafted in Norton, OH
+                        </div>
                       </div>
 
                       {/* Premium Header */}
                       <div className="text-center pt-1 pb-3 border-b border-dashed border-[#d9a520]/20">
                         <h4 className="font-serif-modern text-2xl md:text-3xl font-black text-[#d9a520] uppercase leading-none tracking-wider italic">
-                          Mix & Match 3-Jar Box
+                          Whipped Creamed Honey
                         </h4>
-                        <p className="text-[12px] text-stone-300 font-serif-modern italic mt-1.5 leading-none">Choose any three premium flavors below</p>
+                        <p className="text-[12px] text-stone-300 font-serif-modern italic mt-1.5 leading-none">Slow-spun pure wildflower honey • 5oz jars</p>
                       </div>
 
-                      {/* Prominent Pricing Container */}
-                      <div className="bg-gradient-to-r from-amber-500/15 via-[#d9a520]/10 to-amber-600/5 border border-[#d9a520]/30 rounded-2xl p-5 flex flex-col items-center justify-center text-center relative overflow-hidden flex-grow my-2">
-                        <div className="absolute top-0 right-0 w-12 h-12 bg-[#d9a520]/10 rounded-full blur-xl"></div>
-                        <div className="text-[10px] font-black text-[#d9a520] uppercase tracking-[0.2em] leading-none mb-2 text-center font-sans">
-                          CRAFT YOUR 3-JAR BOX
-                        </div>
-                        <div className="flex items-center justify-center gap-5 mt-2">
-                          <span className="text-5xl font-black text-[#d9a520] tracking-tight font-serif-modern italic leading-none">$34.99</span>
-                          <div className="h-9 w-[1px] bg-stone-700/60"></div>
-                          <div className="text-left leading-none">
-                            <span className="text-xs tracking-widest font-extrabold text-[#d9a520] uppercase font-sans block">FREE SHIPPING</span>
-                            <span className="text-[9.5px] text-stone-300 block mt-1.5 font-serif-modern italic font-bold">Directly from our hive in Norton</span>
-                          </div>
-                        </div>
-                      </div>
+                      {/* Explore Flavors CTA */}
+                      <a 
+                        href="#marketstand-creamed"
+                        className="w-full text-center bg-[#d9a520] hover:bg-[#c4951b] text-[#1a4332] font-black text-[10px] uppercase tracking-[0.2em] py-3.5 rounded-xl shadow-lg transition-all duration-300 active:scale-95 block mt-auto"
+                      >
+                        Explore All Flavors Below ➔
+                      </a>
 
                     </div>
                     
@@ -1413,7 +1263,136 @@ const App: React.FC = () => {
                       Micro-Batch Store
                     </div>
                     <h5 className="text-4xl md:text-5xl font-serif-modern font-black text-forest italic leading-none tracking-tight">The Market Stand</h5>
-                    <p className="text-stone-500 font-serif-modern italic text-xs mt-1">Select from our small-batch whipped creamed honeys below to fill your custom box</p>
+                    <p className="text-stone-500 font-serif-modern italic text-xs mt-1">Select our small-batch honeys below — artisanal creamed honey and spicy hot honey</p>
+                  </div>
+
+                  {/* HOT HONEY ARTISAN STANDOUT SECTION ($14) */}
+                  <div 
+                    id="marketstand-hot-honey" 
+                    className="relative overflow-hidden bg-gradient-to-br from-[#1b1008] via-[#26150b] to-[#120804] text-[#fdfcf8] rounded-[2.5rem] border-2 border-[#d9a520]/50 shadow-2xl p-6 md:p-8 lg:p-10 transition-all duration-300 group"
+                  >
+                    {/* Ambient Glow Orbs */}
+                    <div className="absolute -right-16 -top-16 w-80 h-80 bg-[#d9a520]/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="absolute -left-16 -bottom-16 w-80 h-80 bg-red-650/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+                      
+                      {/* Left: Product Jar Image Frame */}
+                      <div className="lg:col-span-5 flex justify-center">
+                        <div className="relative w-full max-w-[340px] aspect-square rounded-[2.2rem] overflow-hidden border-2 border-[#d9a520]/60 shadow-[0_20px_45px_rgba(0,0,0,0.7)] bg-black/40 group-hover:border-[#d9a520] transition-all duration-500">
+                          <img 
+                            src="/assets/hot-honey.jpg" 
+                            alt="Jessica Farms Hot Honey" 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-105 contrast-105"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'assets/hothoneypromo2.png';
+                            }}
+                          />
+                          <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
+                            <span className="inline-flex items-center gap-1.5 bg-[#d9a520] text-[#1a4332] text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+                              <Flame className="w-3.5 h-3.5 text-red-650" />
+                              Sweet Heat
+                            </span>
+                          </div>
+                          <div className="absolute bottom-4 right-4 z-20">
+                            <span className="bg-black/80 backdrop-blur-md text-[#d9a520] border border-[#d9a520]/40 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+                              5 oz Glass Jar
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: Product Story, Pricing & Add to Cart */}
+                      <div className="lg:col-span-7 space-y-5 text-left">
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#d9a520]/20 text-[#d9a520] border border-[#d9a520]/40 rounded-full text-[10px] font-black uppercase tracking-[0.25em]">
+                            <Sparkles className="w-3 h-3 text-[#d9a520]" />
+                            Featured Release
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <h4 className="text-3xl md:text-4xl lg:text-5xl font-serif-modern font-black italic tracking-tight text-[#fdfcf8] leading-tight">
+                            Jessica Farms Hot Honey
+                          </h4>
+                          <p className="text-stone-300 text-sm md:text-base font-serif-modern italic leading-relaxed">
+                            Made with real honey, habanero &amp; ghost peppers. Sweet heat with a serious kick.
+                          </p>
+                        </div>
+
+                        {/* Price & Quantity Selector Container */}
+                        <div className="bg-white/5 border border-[#d9a520]/30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+                          <div>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-4xl font-serif-modern font-black text-[#d9a520] italic leading-none">$14</span>
+                              <span className="text-xs text-stone-400 uppercase font-sans font-bold tracking-wider">/ jar</span>
+                            </div>
+                            <span className="text-[10px] text-stone-400 font-serif-modern italic block mt-1">
+                              Total: ${(hotHoneyQty * 14).toFixed(2)} USD
+                            </span>
+                          </div>
+
+                          {/* Interactive Quantity Selector */}
+                          <div className="flex items-center gap-2 bg-stone-900/80 border border-stone-700/80 rounded-xl p-1">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-stone-400 px-2 select-none">Qty:</span>
+                            <button
+                              type="button"
+                              onClick={() => setHotHoneyQty(q => Math.max(1, q - 1))}
+                              className="w-7 h-7 rounded-lg bg-stone-800 hover:bg-stone-700 active:scale-95 text-[#d9a520] font-black flex items-center justify-center transition-all cursor-pointer select-none"
+                              aria-label="Decrease quantity"
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="w-6 text-center font-mono font-bold text-sm text-[#fdfcf8]">
+                              {hotHoneyQty}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setHotHoneyQty(q => Math.min(24, q + 1))}
+                              className="w-7 h-7 rounded-lg bg-stone-800 hover:bg-stone-700 active:scale-95 text-[#d9a520] font-black flex items-center justify-center transition-all cursor-pointer select-none"
+                              aria-label="Increase quantity"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Add to Cart CTA Button */}
+                        <div className="pt-2">
+                          <button
+                            type="button"
+                            onClick={() => addToCart(HOT_HONEY_PRODUCT, hotHoneyQty)}
+                            className="w-full sm:w-auto py-4 px-8 rounded-2xl text-xs font-black uppercase tracking-widest bg-[#d9a520] hover:bg-[#c4951b] active:scale-95 text-[#1a4332] hover:shadow-[0_10px_30px_rgba(217,165,32,0.35)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-xl"
+                          >
+                            <ShoppingCart className="w-4 h-4" />
+                            <span>Add to Cart</span>
+                          </button>
+                        </div>
+
+                        {/* Security & Farm Guarantee Notice */}
+                        <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-[10px] text-stone-400 font-serif-modern italic">
+                          <div className="flex items-center gap-1.5">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Encrypted 256-bit checkout processed safely by Stripe</span>
+                          </div>
+                          <span className="text-[#d9a520]/80">Norton, OH Apiary</span>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  {/* Whipped Creamed Honeys Divider & Sub-header */}
+                  <div id="marketstand-creamed" className="flex flex-col items-center text-center pt-6 pb-2 border-t border-stone-200">
+                    <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-forest bg-[#1a4332]/5 border border-forest/15 px-3.5 py-1 rounded-full mb-2">
+                      <span>🍯</span> Hand-Spun Creamed Honeys
+                    </div>
+                    <h6 className="text-2xl md:text-3xl font-serif-modern font-black text-forest italic leading-tight">
+                      Whipped Creamed Honey Flavors
+                    </h6>
+                    <p className="text-stone-500 font-serif-modern italic text-xs mt-1 max-w-md mx-auto">
+                      Handcrafted small-batch flavors in 5oz glass jars
+                    </p>
                   </div>
 
                   {/* Flavor Grid */}
@@ -1451,10 +1430,11 @@ const App: React.FC = () => {
                               />
                             </div>
 
-                            <div>
+                            <div className="flex items-center justify-between gap-2">
                               <h6 className="font-serif-modern font-black text-lg text-forest group-hover:text-honey transition-colors leading-tight">{flavor.name}</h6>
-                              <div className="h-[2px] w-8 bg-amber-500/20 my-1.5"></div>
+                              <span className="font-serif-modern font-black text-base text-forest italic flex-shrink-0">$10.00</span>
                             </div>
+                            <div className="h-[2px] w-8 bg-amber-500/20 my-1.5"></div>
                             <p className="text-xs text-stone-500 font-serif-modern leading-relaxed italic">{flavor.description}</p>
                           </div>
 
@@ -1462,11 +1442,12 @@ const App: React.FC = () => {
                           <div className="mt-6 pt-4 border-t border-stone-100/70 flex flex-col gap-2">
                             <button 
                               onClick={() => {
-                                addToBundleSlots(flavor);
+                                addToCart(flavor);
                               }}
                               className="w-full text-xs bg-[#1a4332] hover:bg-[#123023] text-white font-black py-3.5 rounded-xl uppercase tracking-wider transition-all duration-300 active:scale-95 shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
                             >
-                              <span>Add to Box</span>
+                              <ShoppingBag className="w-3.5 h-3.5 text-[#d9a520]" />
+                              <span>Add to Cart • $10.00</span>
                             </button>
                             <p className="text-[10px] text-stone-400 font-serif-modern italic text-center mt-1 select-none tracking-wide">
                               Small-batch handcrafted honey.
@@ -1626,6 +1607,7 @@ const App: React.FC = () => {
             <button onClick={() => { setCurrentPage(Page.Home); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-forest transition-colors">Home</button>
             {CONFIG.enableStore && <button onClick={() => { setCurrentPage(Page.Shop); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-forest transition-colors">Shop</button>}
             <button onClick={() => navigateToHomeSection('markets')} className="hover:text-forest transition-colors">Markets</button>
+            <button onClick={() => navigateToHomeSection('youtube')} className="hover:text-[#ff0000] transition-colors">YouTube</button>
             {CONFIG.enableEducation && <button onClick={() => navigateToHomeSection('education')} className="hover:text-forest transition-colors">Educational Events</button>}
             <button onClick={() => { setCurrentPage(Page.Contact); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-forest transition-colors">Contact</button>
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-forest transition-colors">Instagram</a>

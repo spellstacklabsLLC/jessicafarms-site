@@ -19,5 +19,22 @@ export enum Page {
   Studio = 'studio',
   Play = 'play',
   Checkout = 'checkout',
-  Contact = 'contact'
+  Contact = 'contact',
+  WholesaleOrder = 'wholesale-order'
+}
+
+export interface WholesaleOrderData {
+  cases: number;
+  businessName: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  shippingAddress: {
+    street: string;
+    aptSuite?: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  notes?: string;
 }

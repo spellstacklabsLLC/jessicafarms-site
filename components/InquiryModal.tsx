@@ -36,7 +36,7 @@ const InquiryModal: React.FC<InquiryModalProps> = ({ product, onClose }) => {
     
     try {
       // Formspree submission
-      const formspreeId = getEnvVar('VITE_FORMSPREE_ID') || 'your_formspree_id';
+      const formspreeId = getEnvVar('VITE_FORMSPREE_ID') || 'mnjgvnee';
       const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
