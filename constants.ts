@@ -47,33 +47,33 @@ export const PRODUCTS: Product[] = [
     category: 'hive',
     imageUrl: '/assets/banana-honey.jpg'
   },
-  // {
-  //   id: 'h5',
-  //   name: 'Cherry Creamed Honey',
-  //   price: '$10.00',
-  //   priceNumber: 10.00,
-  //   description: 'Ohio wild cherry sweet essence spun with deep whipped honey. 5oz jar.',
-  //   category: 'hive',
-  //   imageUrl: '/assets/cherry-honey.jpg'
-  // },
-  // {
-  //   id: 'h6',
-  //   name: 'Hot Honey Chilli Infusion',
-  //   price: '$10.00',
-  //   priceNumber: 10.00,
-  //   description: 'Wildflower honey infused with dried heirloom chilis for a clean sweet kick. 5oz jar.',
-  //   category: 'hive',
-  //   imageUrl: '/assets/hot-honey.jpg'
-  // },
-  // {
-  //   id: 'h7',
-  //   name: 'Espresso Creamed Honey',
-  //   price: '$10.00',
-  //   priceNumber: 10.00,
-  //   description: 'Dark-roasted premium espresso spun with slow-churned whipped honey. 5oz jar.',
-  //   category: 'hive',
-  //   imageUrl: '/assets/espresso-honey.jpg'
-  // },
+  {
+    id: 'h5',
+    name: 'Cherry Creamed Honey',
+    price: '$10.00',
+    priceNumber: 10.00,
+    description: 'Ohio wild cherry sweet essence spun with deep whipped honey. 5oz jar.',
+    category: 'hive',
+    imageUrl: '/assets/cherry-honey.jpg'
+  },
+  {
+    id: 'h6',
+    name: 'Hot Honey Chilli Infusion',
+    price: '$10.00',
+    priceNumber: 10.00,
+    description: 'Wildflower honey infused with dried heirloom chilis for a clean sweet kick. 5oz jar.',
+    category: 'hive',
+    imageUrl: '/assets/hot-honey.jpg'
+  },
+  {
+    id: 'h7',
+    name: 'Espresso Creamed Honey',
+    price: '$10.00',
+    priceNumber: 10.00,
+    description: 'Dark-roasted premium espresso spun with slow-churned whipped honey. 5oz jar.',
+    category: 'hive',
+    imageUrl: '/assets/espresso-honey.jpg'
+  },
   {
     id: 'h8',
     name: 'Peanut Butter Creamed Honey',
@@ -129,32 +129,67 @@ export interface Market {
 
 export const MARKET_SCHEDULE: Market[] = [
   {
-    name: "Main Street Wadsworth Farmers Market",
-    day: "Saturdays, July 11 – Sept 26, 2026",
-    time: "9:00 AM – 12:00 PM",
-    location: "121 Watrusa Ave., Wadsworth, OH 44281",
-    description: "Join us weekly in Wadsworth! Find our handcrafted creamed honey, fresh beeswax candles, and raw Ohio wildflower honey."
-  },
-  // {
-  //   name: "Celestia Summerfest Music & Arts Festival",
-  //   day: "Saturday, August 1",
-  //   time: "Starting at 1:00 PM",
-  //   location: "Wadsworth, OH",
-  //   description: "A gorgeous celebration of local music and arts. Drop by our booth to experience our educational live observation bee hive!"
-  // },
-  {
-    name: "Norton Cider Festival",
-    day: "Oct 2, 3, & 4, 2026",
-    time: "Festival Hours",
-    location: "Norton, OH",
-    description: "A beloved local tradition! Enjoy wonderful cider, family-friendly fun, and visit our farm booth for all your fall honey supply."
+    name: "Norton Craft Fair & Gift Show",
+    day: "Sat, Oct 24",
+    time: "9 AM – 3 PM",
+    location: "Norton Elementary, Norton",
+    description: "Join us at Norton Elementary for local craft favorites, artisanal creamed honey, and seasonal gifts."
   },
   {
-    name: "Scare on the Square",
-    day: "Saturday, October 17, 2026",
-    time: "2:00 PM – 8:00 PM",
-    location: "Celestia Theater — Wadsworth, Ohio",
-    description: "Celebrate spooky season in downtown Wadsworth! Stop by our stand at the Celestia Theater for local raw honey, hot honey, and seasonal fall favorites."
+    name: "Medina Eagles Holiday Craft Show",
+    day: "Sun, Nov 15",
+    time: "10 AM – 4 PM",
+    location: "696 Lafayette Rd, Medina",
+    description: "Shop raw wildflower honey, infused creamed honey, and handcrafted bee gifts in Medina."
+  },
+  {
+    name: "Barberton Christmas Walk",
+    day: "Sat, Nov 28",
+    time: "2 – 8 PM",
+    location: "Barberton",
+    description: "Celebrate the season in downtown Barberton! Enjoy sweet holiday treats, hot honey, and gifts."
+  },
+  {
+    name: "720 Holiday Market #1",
+    day: "Fri, Dec 4",
+    time: "4 – 8 PM",
+    location: "Oakwood Square, Canton",
+    description: "Kick off holiday shopping under the market lights with our handcrafted creamed honeys."
+  },
+  {
+    name: "720 Holiday Market #2",
+    day: "Sat, Dec 5",
+    time: "12 – 4 PM",
+    location: "Oakwood Square, Canton",
+    description: "Afternoon festive market at Oakwood Square with small-batch honeys and holiday gift sets."
+  },
+  {
+    name: "Mistletoe Market",
+    day: "Sat, Dec 5",
+    time: "9 AM – 3 PM",
+    location: "Hartville MarketPlace",
+    description: "Find us at Hartville MarketPlace for the annual Mistletoe Market featuring our best-selling artisanal honey."
+  },
+  {
+    name: "720 Holiday Market #3",
+    day: "Fri, Dec 11",
+    time: "4 – 8 PM",
+    location: "Oakwood Square, Canton",
+    description: "Festive evening market in Canton featuring our limited small-batch honey creations and stocking stuffers."
+  },
+  {
+    name: "720 Holiday Market #4",
+    day: "Sat, Dec 12",
+    time: "12 – 4 PM",
+    location: "Oakwood Square, Canton",
+    description: "Catch us for Saturday holiday shopping at Oakwood Square with whipped creamed honey and sweet gifts."
+  },
+  {
+    name: "Christmas in the Valley",
+    day: "Sun, Dec 13",
+    time: "Starts 11 AM",
+    location: "Valley City",
+    description: "A magical holiday tradition in Valley City! Stop by our booth for sweet holiday cheer, raw honey, and hot honey."
   }
 ];
 

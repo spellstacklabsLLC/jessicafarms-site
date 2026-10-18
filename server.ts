@@ -203,19 +203,10 @@ async function startServer() {
   });
 
   // Dedicated Wholesale Stripe Checkout Session Route
-  // IMPORTANT: Calculates and validates wholesale pricing on the backend.
+  // Streamlined to collect shipping and customer info securely on Stripe
   app.post("/api/create-wholesale-checkout-session", async (req, res) => {
     try {
-      const {
-        cases,
-        businessName,
-        contactName,
-        email,
-        phone,
-        taxId,
-        shippingAddress,
-        notes,
-      } = req.body;
+      const { cases, email } = req.body;
 
       // Backend validation of case quantity
       const numCases = Math.floor(Number(cases));
@@ -224,29 +215,6 @@ async function startServer() {
       }
       if (numCases > 500) {
         return res.status(400).json({ error: "For orders exceeding 500 cases, please contact the farm directly." });
-      }
-
-      // Backend validation of required fields
-      if (!businessName || !businessName.trim()) {
-        return res.status(400).json({ error: "Business name is required." });
-      }
-      if (!contactName || !contactName.trim()) {
-        return res.status(400).json({ error: "Contact name is required." });
-      }
-      if (!email || !email.trim() || !email.includes("@")) {
-        return res.status(400).json({ error: "A valid email address is required." });
-      }
-      if (!phone || !phone.trim()) {
-        return res.status(400).json({ error: "Phone number is required." });
-      }
-      if (
-        !shippingAddress ||
-        !shippingAddress.street ||
-        !shippingAddress.city ||
-        !shippingAddress.state ||
-        !shippingAddress.zip
-      ) {
-        return res.status(400).json({ error: "Full shipping address is required." });
       }
 
       // Exact Backend Wholesale Calculations (Never trusting client-supplied prices)
@@ -258,90 +226,8 @@ async function startServer() {
 
       const orderId = `WHOLESALE-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
 
-      // Create new backend order record with full contact details and shipping info
-      const orderRecord: WholesaleOrderRecord = {
-        id: orderId,
-        createdAt: new Date().toISOString(),
-        cases: numCases,
-        totalJars,
-        totalCents,
-        totalFormatted: `$${subtotalFormatted}`,
-        businessName: businessName.trim(),
-        contactName: contactName.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-        taxId: (taxId || "").trim() || undefined,
-        shippingAddress: {
-          street: shippingAddress.street.trim(),
-          aptSuite: (shippingAddress.aptSuite || "").trim(),
-          city: shippingAddress.city.trim(),
-          state: shippingAddress.state.trim().toUpperCase(),
-          zip: shippingAddress.zip.trim(),
-        },
-        notes: (notes || "").trim(),
-        status: "pending_checkout",
-      };
-
-      wholesaleOrders.unshift(orderRecord);
-
-      console.log(`[Backend Wholesale Order Registered]`);
-      console.log(`  ID: ${orderRecord.id}`);
-      console.log(`  Business: ${orderRecord.businessName}${orderRecord.taxId ? ` (Tax/EIN: ${orderRecord.taxId})` : ""}`);
-      console.log(`  Contact: ${orderRecord.contactName} | Phone: ${orderRecord.phone} | Email: ${orderRecord.email}`);
-      console.log(`  Shipping: ${orderRecord.shippingAddress.street} ${orderRecord.shippingAddress.aptSuite}, ${orderRecord.shippingAddress.city}, ${orderRecord.shippingAddress.state} ${orderRecord.shippingAddress.zip}`);
-      console.log(`  Quantity: ${orderRecord.cases} Cases (${orderRecord.totalJars} Jars) — Total: ${orderRecord.totalFormatted}`);
-      if (orderRecord.notes) {
-        console.log(`  Notes: ${orderRecord.notes}`);
-      }
-
       const stripeClient = getStripe();
       const origin = req.headers.origin || `http://localhost:${PORT}`;
-
-      const fullShippingAddressString = `${shippingAddress.street.trim()}${shippingAddress.aptSuite ? " " + shippingAddress.aptSuite.trim() : ""}, ${shippingAddress.city.trim()}, ${shippingAddress.state.trim().toUpperCase()} ${shippingAddress.zip.trim()}`;
-
-      // Optionally create/attach Stripe customer with full shipping and contact information
-      let stripeCustomerId: string | undefined;
-      try {
-        const customer = await stripeClient.customers.create({
-          name: `${businessName.trim()} (Attn: ${contactName.trim()})`,
-          email: email.trim(),
-          phone: phone.trim(),
-          address: {
-            line1: shippingAddress.street.trim(),
-            line2: (shippingAddress.aptSuite || "").trim() || undefined,
-            city: shippingAddress.city.trim(),
-            state: shippingAddress.state.trim().toUpperCase(),
-            postal_code: shippingAddress.zip.trim(),
-            country: "US",
-          },
-          shipping: {
-            name: `${businessName.trim()} (Attn: ${contactName.trim()})`,
-            phone: phone.trim(),
-            address: {
-              line1: shippingAddress.street.trim(),
-              line2: (shippingAddress.aptSuite || "").trim() || undefined,
-              city: shippingAddress.city.trim(),
-              state: shippingAddress.state.trim().toUpperCase(),
-              postal_code: shippingAddress.zip.trim(),
-              country: "US",
-            },
-          },
-          metadata: {
-            business_name: businessName.trim(),
-            contact_name: contactName.trim(),
-            contact_phone: phone.trim(),
-            contact_email: email.trim(),
-            tax_id: (taxId || "").trim() || "N/A",
-            wholesale_order_id: orderId,
-            shipping_full_address: fullShippingAddressString,
-            delivery_notes: (notes || "").trim().slice(0, 500) || "None",
-          },
-        });
-        stripeCustomerId = customer.id;
-        orderRecord.stripeCustomerId = stripeCustomerId;
-      } catch (custError) {
-        console.warn("Could not create Stripe customer record, falling back to session email:", custError);
-      }
 
       const session = await stripeClient.checkout.sessions.create({
         payment_method_types: ["card"],
@@ -351,7 +237,7 @@ async function startServer() {
               currency: "usd",
               product_data: {
                 name: "Jessica Farms Hot Honey — Wholesale Case (20 Jars)",
-                description: `Wholesale order for ${businessName.trim()}: ${numCases} case${numCases > 1 ? "s" : ""} (${totalJars} total 5oz jars) at $6.99/jar ($139.80/case). Norton, OH.`,
+                description: `Wholesale Case Order: ${numCases} case${numCases > 1 ? "s" : ""} (${totalJars} total 5oz jars) at $6.99/jar ($139.80/case). Norton, OH Apiary.`,
                 images: [`${origin}/assets/hot-honey.jpg`],
               },
               unit_amount: CASE_PRICE_CENTS,
@@ -359,94 +245,22 @@ async function startServer() {
             quantity: numCases,
           },
         ],
-        mode: "payment", // Full wholesale payment — no consignment, invoicing, or net terms
-        ...(stripeCustomerId
-          ? {
-              customer: stripeCustomerId,
-              customer_update: {
-                name: "auto",
-                address: "auto",
-                shipping: "auto",
-              },
-            }
-          : { customer_email: email.trim() }),
+        mode: "payment",
+        ...(email ? { customer_email: email } : {}),
+        shipping_address_collection: {
+          allowed_countries: ["US"],
+        },
         phone_number_collection: {
           enabled: true,
         },
-        payment_intent_data: {
-          shipping: {
-            name: `${businessName.trim()} (Attn: ${contactName.trim()})`,
-            phone: phone.trim(),
-            address: {
-              line1: shippingAddress.street.trim(),
-              line2: (shippingAddress.aptSuite || "").trim() || undefined,
-              city: shippingAddress.city.trim(),
-              state: shippingAddress.state.trim().toUpperCase(),
-              postal_code: shippingAddress.zip.trim(),
-              country: "US",
-            },
-          },
-          description: `Wholesale Order: ${businessName.trim()} (${numCases} case${numCases > 1 ? "s" : ""}, ${totalJars} jars)`,
-          metadata: {
-            order_id: orderId,
-            order_type: "wholesale",
-            business_name: businessName.trim(),
-            contact_name: contactName.trim(),
-            contact_phone: phone.trim(),
-            contact_email: email.trim(),
-            tax_id: (taxId || "").trim() || "N/A",
-            shipping_name: `${businessName.trim()} (Attn: ${contactName.trim()})`,
-            shipping_phone: phone.trim(),
-            shipping_full_address: fullShippingAddressString,
-            shipping_street: shippingAddress.street.trim(),
-            shipping_apt_suite: (shippingAddress.aptSuite || "").trim() || "N/A",
-            shipping_city: shippingAddress.city.trim(),
-            shipping_state: shippingAddress.state.trim().toUpperCase(),
-            shipping_zip: shippingAddress.zip.trim(),
-            shipping_country: "US",
-            delivery_notes: (notes || "").trim().slice(0, 500) || "None",
-            case_quantity: String(numCases),
-            jar_quantity: String(totalJars),
-            total_paid: `$${subtotalFormatted}`,
-          },
-        },
         invoice_creation: {
           enabled: true,
-          invoice_data: {
-            description: `Jessica Farms Wholesale Order #${orderId} - ${numCases} Case${numCases > 1 ? "s" : ""} (${totalJars} Jars)`,
-            metadata: {
-              wholesale_order_id: orderId,
-              business_name: businessName.trim(),
-              contact_name: contactName.trim(),
-              shipping_address: fullShippingAddressString,
-            },
-            custom_fields: [
-              { name: "Business Name", value: businessName.trim().slice(0, 30) },
-              { name: "Contact", value: `${contactName.trim()} (${phone.trim()})`.slice(0, 30) },
-            ],
-            footer: "Jessica Farms Apiary • Norton, OH. Questions? Contact wholesale@jessicafarms.com",
-          },
         },
-        success_url: `${origin}/wholesale?success=true&session_id={CHECKOUT_SESSION_ID}&cases=${numCases}&jars=${totalJars}&business=${encodeURIComponent(businessName.trim())}`,
+        success_url: `${origin}/wholesale?success=true&session_id={CHECKOUT_SESSION_ID}&cases=${numCases}&jars=${totalJars}`,
         cancel_url: `${origin}/wholesale?canceled=true`,
         metadata: {
           order_id: orderId,
           order_type: "wholesale",
-          business_name: businessName.trim(),
-          contact_name: contactName.trim(),
-          contact_phone: phone.trim(),
-          contact_email: email.trim(),
-          tax_id: (taxId || "").trim() || "N/A",
-          shipping_name: `${businessName.trim()} (Attn: ${contactName.trim()})`,
-          shipping_phone: phone.trim(),
-          shipping_full_address: fullShippingAddressString,
-          shipping_street: shippingAddress.street.trim(),
-          shipping_apt_suite: (shippingAddress.aptSuite || "").trim() || "N/A",
-          shipping_city: shippingAddress.city.trim(),
-          shipping_state: shippingAddress.state.trim().toUpperCase(),
-          shipping_zip: shippingAddress.zip.trim(),
-          shipping_country: "US",
-          delivery_notes: (notes || "").trim().slice(0, 500) || "None",
           case_quantity: String(numCases),
           jar_quantity: String(totalJars),
           price_per_jar: "$6.99",
@@ -454,8 +268,6 @@ async function startServer() {
           total_paid: `$${subtotalFormatted}`,
         },
       });
-
-      orderRecord.stripeSessionId = session.id;
 
       res.json({ url: session.url });
     } catch (error) {
@@ -493,7 +305,7 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-    app.get("/{*splat}", (req, res) => {
+    app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }

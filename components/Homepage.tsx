@@ -203,10 +203,10 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, o
             From the Hive to Your Table
           </div>
           <h2 className="text-4xl md:text-5xl font-serif-modern font-black text-forest italic leading-none tracking-tight">
-            Our Creamed Honey Favorites
+            Our Whipped Creamed Favorites
           </h2>
           <p className="text-stone-500 font-serif-modern italic text-sm leading-relaxed">
-            Unlike liquid honey, our creamed honeys are slowly spun at precise cool temperatures to develop an incredibly smooth, spreadable velvet texture. Handcrafted in small batches in Norton, Ohio.
+            Unlike liquid honey, our creamed honeys are slowly spun at precise cool temperatures to develop an incredibly smooth, spreadable velvet texture. Handcrafted in small batches in Norton, Ohio for just $10 a jar.
           </p>
         </div>
 
@@ -441,7 +441,7 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, o
           </div>
 
           {/* Markets Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {MARKET_SCHEDULE.map((market, idx) => (
               <div 
                 key={idx}
