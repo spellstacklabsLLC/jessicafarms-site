@@ -47,33 +47,33 @@ export const PRODUCTS: Product[] = [
     category: 'hive',
     imageUrl: '/assets/banana-honey.jpg'
   },
-  {
-    id: 'h5',
-    name: 'Cherry Creamed Honey',
-    price: '$10.00',
-    priceNumber: 10.00,
-    description: 'Ohio wild cherry sweet essence spun with deep whipped honey. 5oz jar.',
-    category: 'hive',
-    imageUrl: '/assets/cherry-honey.jpg'
-  },
-  {
-    id: 'h6',
-    name: 'Hot Honey Chilli Infusion',
-    price: '$10.00',
-    priceNumber: 10.00,
-    description: 'Wildflower honey infused with dried heirloom chilis for a clean sweet kick. 5oz jar.',
-    category: 'hive',
-    imageUrl: '/assets/hot-honey.jpg'
-  },
-  {
-    id: 'h7',
-    name: 'Espresso Creamed Honey',
-    price: '$10.00',
-    priceNumber: 10.00,
-    description: 'Dark-roasted premium espresso spun with slow-churned whipped honey. 5oz jar.',
-    category: 'hive',
-    imageUrl: '/assets/espresso-honey.jpg'
-  },
+  // {
+  //   id: 'h5',
+  //   name: 'Cherry Creamed Honey',
+  //   price: '$10.00',
+  //   priceNumber: 10.00,
+  //   description: 'Ohio wild cherry sweet essence spun with deep whipped honey. 5oz jar.',
+  //   category: 'hive',
+  //   imageUrl: '/assets/cherry-honey.jpg'
+  // },
+  // {
+  //   id: 'h6',
+  //   name: 'Hot Honey Chilli Infusion',
+  //   price: '$10.00',
+  //   priceNumber: 10.00,
+  //   description: 'Wildflower honey infused with dried heirloom chilis for a clean sweet kick. 5oz jar.',
+  //   category: 'hive',
+  //   imageUrl: '/assets/hot-honey.jpg'
+  // },
+  // {
+  //   id: 'h7',
+  //   name: 'Espresso Creamed Honey',
+  //   price: '$10.00',
+  //   priceNumber: 10.00,
+  //   description: 'Dark-roasted premium espresso spun with slow-churned whipped honey. 5oz jar.',
+  //   category: 'hive',
+  //   imageUrl: '/assets/espresso-honey.jpg'
+  // },
   {
     id: 'h8',
     name: 'Peanut Butter Creamed Honey',
