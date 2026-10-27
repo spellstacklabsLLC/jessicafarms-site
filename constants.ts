@@ -203,3 +203,69 @@ export const HOT_HONEY_PRODUCT: Product = {
   imageUrl: '/assets/hot-honey.jpg'
 };
 
+export interface PartnershipLocation {
+  id: string;
+  name: string;
+  area: string;
+  address: string;
+  phone: string;
+  mapUrl: string;
+  websiteUrl: string;
+}
+
+export interface RestaurantPartnershipConfig {
+  enabled: boolean;
+  partnerName: string;
+  eyebrow: string;
+  headline: string;
+  branding: string;
+  description: string;
+  statement: string;
+  pizzaImageUrl: string;
+  productImageUrl: string;
+  locations: PartnershipLocation[];
+}
+
+export const UPPER_CRUST_PARTNERSHIP_CONFIG: RestaurantPartnershipConfig = {
+  // Partnership disabled / removed from active display
+  enabled: false,
+  partnerName: "The Upper Crust",
+  eyebrow: "EXCITING LOCAL PARTNERSHIP",
+  headline: "Local Honey. Legendary Pizza.",
+  branding: "JESSICA FARMS × THE UPPER CRUST",
+  description: "We're bringing the sweet heat to The Upper Crust! Our signature Jessica Farms Hot Honey is now featured at all three locations — adding a delicious kick to your favorite pizza. And the best part? You can pick up a bottle right at the restaurant to enjoy at home!",
+  statement: "Enjoy it on your pizza. Take a bottle home.",
+  pizzaImageUrl: "/assets/hot-honey-pizza.jpg",
+  productImageUrl: "/assets/hot-honey.jpg",
+  locations: [
+    {
+      id: "barberton",
+      name: "The Upper Crust — Barberton / Norton",
+      area: "Barberton / Norton",
+      address: "1378 Wooster Rd W, Barberton, OH 44203",
+      phone: "(330) 825-9000",
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=1378+Wooster+Rd+W+Barberton+OH+44203",
+      websiteUrl: "https://uppercrustoh.com"
+    },
+    {
+      id: "akron",
+      name: "The Upper Crust — Akron",
+      area: "Akron / Highland Square",
+      address: "835 W Market St, Akron, OH 44303",
+      phone: "(330) 510-3030",
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=835+West+Market+St+Akron+OH+44303",
+      websiteUrl: "https://uppercrustoh.com"
+    },
+    {
+      id: "green",
+      name: "The Upper Crust — Green",
+      area: "Green / Uniontown",
+      address: "3333 Massillon Rd, Green, OH 44685",
+      phone: "(330) 572-0777",
+      mapUrl: "https://www.google.com/maps/search/?api=1&query=3333+Massillon+Rd+Green+OH+44685",
+      websiteUrl: "https://uppercrustoh.com"
+    }
+  ]
+};
+
+

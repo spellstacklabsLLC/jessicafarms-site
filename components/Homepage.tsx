@@ -136,11 +136,12 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, o
       </section>
 
       {/* FEATURED HOT HONEY SECTION */}
-      <section className="relative rounded-[3rem] overflow-hidden bg-gradient-to-br from-[#1b120c] via-[#241710] to-[#120a06] text-[#fdfcf8] shadow-3xl border-4 border-[#d9a520]/30 mx-auto max-w-6xl p-8 md:p-12 lg:p-16">
+      <section className="relative rounded-[3rem] md:rounded-[3.5rem] overflow-hidden bg-gradient-to-br from-[#1b120c] via-[#241710] to-[#120a06] text-[#fdfcf8] shadow-3xl border-4 border-[#d9a520]/30 mx-auto max-w-6xl p-8 md:p-12 lg:p-16">
         {/* Ambient Warm Golden & Pepper Glow Effects */}
-        <div className="absolute -right-20 -top-20 w-96 h-96 bg-[#d9a520]/15 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -left-20 -bottom-20 w-96 h-96 bg-red-650/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -right-24 -top-24 w-96 h-96 bg-[#d9a520]/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute -left-24 -bottom-24 w-96 h-96 bg-red-900/15 rounded-full blur-3xl pointer-events-none"></div>
 
+        {/* OUR SIGNATURE HOT HONEY */}
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
           {/* Product Image */}
           <div className="lg:col-span-5 flex justify-center">
@@ -168,7 +169,7 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, o
               <Sparkles className="w-3.5 h-3.5 text-[#d9a520]" />
               Featured Release
             </div>
-
+            
             <div className="space-y-3">
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif-modern font-black italic tracking-tight leading-tight text-[#fdfcf8]">
                 Jessica Farms Hot Honey
@@ -557,7 +558,7 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, o
           </div>
         </section>
       )}
-
+ 
       {/* INTEGRATED MARKET SCHEDULE MODAL */}
       {showFullSchedule && (
         <div className="fixed inset-0 bg-stone-950/70 backdrop-blur-md flex items-center justify-center z-[200] p-6 animate-in fade-in duration-300">

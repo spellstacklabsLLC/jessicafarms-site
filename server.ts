@@ -203,25 +203,28 @@ async function startServer() {
   });
 
   // Dedicated Wholesale Stripe Checkout Session Route
-  // Streamlined to collect shipping and customer info securely on Stripe
+  // Streamlined to collect shipping and customer info securely on Stripe with Free Shipping included
   app.post("/api/create-wholesale-checkout-session", async (req, res) => {
     try {
-      const { cases, email } = req.body;
+      const { cases, pails, email } = req.body;
 
-      // Backend validation of case quantity
-      const numCases = Math.floor(Number(cases));
-      if (isNaN(numCases) || numCases < 1) {
-        return res.status(400).json({ error: "Order must contain at least 1 case." });
+      // Backend validation of quantities
+      const numCases = Math.max(0, Math.floor(Number(cases) || 0));
+      const numPails = Math.max(0, Math.floor(Number(pails) || 0));
+
+      if (numCases + numPails < 1) {
+        return res.status(400).json({ error: "Order must contain at least 1 case or 1 food service pail." });
       }
-      if (numCases > 500) {
-        return res.status(400).json({ error: "For orders exceeding 500 cases, please contact the farm directly." });
+      if (numCases > 500 || numPails > 200) {
+        return res.status(400).json({ error: "For high-volume bulk orders exceeding 500 cases or 200 pails, please contact the farm directly." });
       }
 
-      // Exact Backend Wholesale Calculations (Never trusting client-supplied prices)
-      const JARS_PER_CASE = 20;
-      const CASE_PRICE_CENTS = 13980; // $139.80 per case ($6.99/jar * 20 jars)
-      const totalJars = numCases * JARS_PER_CASE;
-      const totalCents = numCases * CASE_PRICE_CENTS;
+      // Exact Backend Wholesale Pricing (Never trusting client-supplied prices)
+      const CASE_PRICE_CENTS = 16000; // $160.00 per case of 20 bottles ($8.00/bottle)
+      const PAIL_PRICE_CENTS = 28000; // $280.00 per 42-pound food service pail
+      const BOTTLES_PER_CASE = 20;
+
+      const totalCents = (numCases * CASE_PRICE_CENTS) + (numPails * PAIL_PRICE_CENTS);
       const subtotalFormatted = (totalCents / 100).toFixed(2);
 
       const orderId = `WHOLESALE-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
@@ -229,24 +232,59 @@ async function startServer() {
       const stripeClient = getStripe();
       const origin = req.headers.origin || `http://localhost:${PORT}`;
 
+      const line_items: any[] = [];
+
+      if (numCases > 0) {
+        line_items.push({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "Jessica Farms Hot Honey — Wholesale Case (20 Bottles)",
+              description: `Wholesale Case Pack: ${numCases} case${numCases > 1 ? "s" : ""} (${numCases * BOTTLES_PER_CASE} total 5oz bottles) at $160.00/case ($8.00/bottle). Free Shipping included.`,
+              images: [`${origin}/assets/hot-honey.jpg`],
+            },
+            unit_amount: CASE_PRICE_CENTS,
+          },
+          quantity: numCases,
+        });
+      }
+
+      if (numPails > 0) {
+        line_items.push({
+          price_data: {
+            currency: "usd",
+            product_data: {
+              name: "Jessica Farms Hot Honey — 42 lb Food Service Pail",
+              description: `Food Service Bulk Pail: ${numPails} pail${numPails > 1 ? "s" : ""} (42 lbs pure hot honey) at $280.00/pail. Commercial grade with airtight lid. Free Shipping included.`,
+              images: [`${origin}/assets/hot-honey.jpg`],
+            },
+            unit_amount: PAIL_PRICE_CENTS,
+          },
+          quantity: numPails,
+        });
+      }
+
       const session = await stripeClient.checkout.sessions.create({
         payment_method_types: ["card"],
-        line_items: [
-          {
-            price_data: {
-              currency: "usd",
-              product_data: {
-                name: "Jessica Farms Hot Honey — Wholesale Case (20 Jars)",
-                description: `Wholesale Case Order: ${numCases} case${numCases > 1 ? "s" : ""} (${totalJars} total 5oz jars) at $6.99/jar ($139.80/case). Norton, OH Apiary.`,
-                images: [`${origin}/assets/hot-honey.jpg`],
-              },
-              unit_amount: CASE_PRICE_CENTS,
-            },
-            quantity: numCases,
-          },
-        ],
+        line_items,
         mode: "payment",
         ...(email ? { customer_email: email } : {}),
+        shipping_options: [
+          {
+            shipping_rate_data: {
+              type: "fixed_amount",
+              fixed_amount: {
+                amount: 0, // Free Shipping for wholesale orders
+                currency: "usd",
+              },
+              display_name: "Free Shipping (Included with Wholesale)",
+              delivery_estimate: {
+                minimum: { unit: "business_day", value: 3 },
+                maximum: { unit: "business_day", value: 7 },
+              },
+            },
+          },
+        ],
         shipping_address_collection: {
           allowed_countries: ["US"],
         },
@@ -256,15 +294,15 @@ async function startServer() {
         invoice_creation: {
           enabled: true,
         },
-        success_url: `${origin}/wholesale?success=true&session_id={CHECKOUT_SESSION_ID}&cases=${numCases}&jars=${totalJars}`,
+        success_url: `${origin}/wholesale?success=true&session_id={CHECKOUT_SESSION_ID}&cases=${numCases}&pails=${numPails}`,
         cancel_url: `${origin}/wholesale?canceled=true`,
         metadata: {
           order_id: orderId,
           order_type: "wholesale",
           case_quantity: String(numCases),
-          jar_quantity: String(totalJars),
-          price_per_jar: "$6.99",
-          price_per_case: "$139.80",
+          pail_quantity: String(numPails),
+          total_bottles: String(numCases * BOTTLES_PER_CASE),
+          shipping: "Free Shipping (Included)",
           total_paid: `$${subtotalFormatted}`,
         },
       });
@@ -305,14 +343,11 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-  //   app.get("*", (req, res) => {
-  //     res.sendFile(path.join(distPath, "index.html"));
-  //   });
-  // }
-  app.get("/{*any}", (req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(distPath, "index.html"));
+    });
   }
+
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });
