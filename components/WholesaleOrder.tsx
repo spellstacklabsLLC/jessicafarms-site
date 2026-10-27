@@ -141,13 +141,13 @@ export const WholesaleOrder: React.FC<WholesaleOrderProps> = ({ onBackToSite }) 
             <span className="text-[10px] font-black uppercase tracking-widest text-[#d9a520]">Jessica Farms Apiary</span>
             <h1 className="text-2xl sm:text-3xl font-serif-modern font-black italic text-forest mt-1">Wholesale Order Confirmed</h1>
             <p className="text-xs text-stone-500 mt-2">
-              Thank you for your partnership! A receipt, order invoice, and tracking confirmation have been sent to your email.
+              Thank you for your partnership! A receipt, order invoice, and tracking confirmation will be sent to your email.
             </p>
           </div>
 
           <div className="bg-stone-50 rounded-2xl p-4 text-xs space-y-2.5 text-stone-700 border border-stone-200/80 text-left">
             <div className="font-bold text-forest uppercase tracking-wider text-[10px] border-b border-stone-200 pb-1.5">
-              Order Summary
+              {/* Order Summary */}
             </div>
 
             {successCases > 0 && (
@@ -165,8 +165,8 @@ export const WholesaleOrder: React.FC<WholesaleOrderProps> = ({ onBackToSite }) 
             )}
 
             <div className="flex justify-between items-center pt-2 border-t border-stone-200">
-              <span className="text-stone-600 font-medium">Shipping</span>
-              <span className="font-bold text-emerald-700 uppercase tracking-wide text-[11px]">Free Shipping</span>
+              {/* <span className="text-stone-600 font-medium">Shipping</span>
+              <span className="font-bold text-emerald-700 uppercase tracking-wide text-[11px]">Free Shipping</span> */}
             </div>
           </div>
 
