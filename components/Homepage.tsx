@@ -425,7 +425,7 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, o
                 Support Local Agriculture
               </div>
               <h2 className="text-4xl md:text-5xl font-serif-modern font-black text-forest italic leading-none tracking-tight">
-                Upcoming Farmers Markets
+                Upcoming Events
               </h2>
               <p className="text-stone-500 font-serif-modern italic text-sm">
                 Come taste our micro-batch creamed honeys in person and talk bees with us!

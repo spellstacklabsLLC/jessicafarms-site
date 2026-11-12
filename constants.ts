@@ -129,18 +129,26 @@ export interface Market {
 
 export const MARKET_SCHEDULE: Market[] = [
   {
-    name: "Norton Craft Fair & Gift Show",
-    day: "Sat, Oct 24",
+    name: "Coventry Craft Fair",
+    day: "Sat, Nov 14",
     time: "9 AM – 3 PM",
-    location: "Norton Elementary, Norton",
-    description: "Join us at Norton Elementary for local craft favorites, artisanal creamed honey, and seasonal gifts."
+    location: "Coventry High School, Akron",
+    description: "Shop local crafts, handmade gifts, and Jessica Farms honey favorites at the annual Coventry Craft Fair!"
   },
+
   {
     name: "Medina Eagles Holiday Craft Show",
     day: "Sun, Nov 15",
     time: "10 AM – 4 PM",
     location: "696 Lafayette Rd, Medina",
     description: "Shop raw wildflower honey, infused creamed honey, and handcrafted bee gifts in Medina."
+  },
+  {
+    name: "Hale Farm Holiday Art & Craft Market",
+    day: "Sun, Nov 22",
+    time: "12 PM – 4 PM",
+    location: "Hale Farm & Village, Bath",
+    description: "Celebrate the holiday season at historic Hale Farm & Village! Shop local artisans, unique gifts, and delicious Jessica Farms honey."
   },
   {
     name: "Barberton Christmas Walk",

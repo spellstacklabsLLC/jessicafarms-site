@@ -18,7 +18,7 @@ View your app in AI Studio: https://ai.studio/apps/temp/2
 ### Farm Page (Home)
 - `/assets/farm-hero.jpg` - Main hero background
 - `/assets/honey-icon.png` - Norton Apiary section icon
-- `/assets/apiary.jpg` - Norton Apiary section image
+- `/assets/apiary2.jpg` - Norton Apiary section image
 - `/assets/koi-icon.png` - Ornamental Koi section icon
 - `/assets/koi-pond.jpg` - Ornamental Koi section image
 
