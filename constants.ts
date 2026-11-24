@@ -128,28 +128,7 @@ export interface Market {
 }
 
 export const MARKET_SCHEDULE: Market[] = [
-  {
-    name: "Coventry Craft Fair",
-    day: "Sat, Nov 14",
-    time: "9 AM – 3 PM",
-    location: "Coventry High School, Akron",
-    description: "Shop local crafts, handmade gifts, and Jessica Farms honey favorites at the annual Coventry Craft Fair!"
-  },
 
-  {
-    name: "Medina Eagles Holiday Craft Show",
-    day: "Sun, Nov 15",
-    time: "10 AM – 4 PM",
-    location: "696 Lafayette Rd, Medina",
-    description: "Shop raw wildflower honey, infused creamed honey, and handcrafted bee gifts in Medina."
-  },
-  {
-    name: "Hale Farm Holiday Art & Craft Market",
-    day: "Sun, Nov 22",
-    time: "12 PM – 4 PM",
-    location: "Hale Farm & Village, Bath",
-    description: "Celebrate the holiday season at historic Hale Farm & Village! Shop local artisans, unique gifts, and delicious Jessica Farms honey."
-  },
   {
     name: "Barberton Christmas Walk",
     day: "Sat, Nov 28",
@@ -198,6 +177,27 @@ export const MARKET_SCHEDULE: Market[] = [
     time: "Starts 11 AM",
     location: "Valley City",
     description: "A magical holiday tradition in Valley City! Stop by our booth for sweet holiday cheer, raw honey, and hot honey."
+  },
+  {
+    "name": "Holiday Craft Show & Vendor Event",
+    "day": "Sat, Dec 19",
+    "time": "11 AM - 3 PM",
+    "location": "Wayne County Fairgrounds Event Center, Wooster, OH",
+    "description": "Meet Santa and the Grinch, shop local vendors, and enjoy some holiday cheer! Visit our booth for raw honey, hot honey, specialty creamed honey, and festive honey gifts. Free admission and parking!"
+  },
+  {
+    "name": "Oddmall: Expedition Elsewhere",
+    "day": "Sat, Mar 6",
+    "time": "TBD",
+    "location": "Wayne County Fairgrounds, Wooster, OH",
+    "description": "Explore over 150 vendors, unique art, oddities, cosplay, games, and entertainment! Stop by our booth for raw honey, hot honey, and specialty creamed honey. Free admission and parking!"
+  },
+  {
+    "name": "Oddmall: Expedition Elsewhere",
+    "day": "Sun, Mar 7",
+    "time": "TBD",
+    "location": "Wayne County Fairgrounds, Wooster, OH",
+    "description": "Join us for day two of Oddmall! Discover unusual treasures, enjoy live entertainment, and explore our delicious selection of specialty honey products. Free admission and parking!"
   }
 ];
 
