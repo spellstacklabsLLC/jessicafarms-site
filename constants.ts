@@ -128,7 +128,7 @@ export interface Market {
 }
 
 export const MARKET_SCHEDULE: Market[] = [
-
+  
   {
     name: "Barberton Christmas Walk",
     day: "Sat, Nov 28",
@@ -199,6 +199,7 @@ export const MARKET_SCHEDULE: Market[] = [
     "location": "Wayne County Fairgrounds, Wooster, OH",
     "description": "Join us for day two of Oddmall! Discover unusual treasures, enjoy live entertainment, and explore our delicious selection of specialty honey products. Free admission and parking!"
   }
+
 ];
 
 export const HOT_HONEY_PRODUCT: Product = {
@@ -206,9 +207,19 @@ export const HOT_HONEY_PRODUCT: Product = {
   name: 'Jessica Farms Hot Honey',
   price: '$14',
   priceNumber: 14.00,
-  description: 'Made with real honey, habanero & ghost peppers. Sweet heat with a serious kick.',
+  description: '12 oz jar. Made with real honey, habanero & ghost peppers. Sweet heat with a serious kick.',
   category: 'hive',
-  imageUrl: '/assets/hot-honey.jpg'
+  imageUrl: '/assets/hothoneypromo2.jpg'
+};
+
+export const HOT_HONEY_HOLIDAY_BUNDLE: Product = {
+  id: 'hot-honey-holiday-bundle',
+  name: 'Hot Honey Holiday Bundle (3-Pack)',
+  price: '$39.99',
+  priceNumber: 39.99,
+  description: 'Limited-time holiday 3-pack of 12 oz Jessica Farms Hot Honey squeeze bottles. Made in Ohio with wildflower honey, habanero & ghost peppers. Free Shipping included.',
+  category: 'hive',
+  imageUrl: '/assets/holiday-hot-honey-bundle.jpg'
 };
 
 export interface PartnershipLocation {

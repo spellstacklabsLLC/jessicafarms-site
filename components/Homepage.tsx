@@ -21,9 +21,10 @@ interface HomepageProps {
   setCurrentPage: (page: Page) => void;
   onInquireProduct?: (product: Product) => void;
   onShopHotHoney?: () => void;
+  onOpenHolidayBundle?: () => void;
 }
 
-const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, onShopHotHoney }) => {
+const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, onShopHotHoney, onOpenHolidayBundle }) => {
   const [showFullSchedule, setShowFullSchedule] = useState(false);
 
   // Take 3 popular products for featured display
@@ -183,7 +184,7 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, o
             </div>
 
             {/* Direct Shop CTA */}
-            <div className="pt-4 border-t border-white/10 flex flex-wrap items-center gap-6">
+            <div className="pt-4 border-t border-white/10 flex flex-wrap items-center gap-4">
               <button 
                 onClick={handleShopHotHoney}
                 className="bg-[#d9a520] hover:bg-[#c4951b] text-[#1a4332] px-8 py-4.5 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl flex items-center gap-2.5 group transition-all duration-300 active:scale-95 cursor-pointer"
@@ -191,6 +192,16 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, o
                 <span>Shop Hot Honey</span>
                 <ArrowRight className="w-4 h-4 text-[#1a4332] group-hover:translate-x-1 transition-transform" />
               </button>
+
+              {onOpenHolidayBundle && (
+                <button
+                  type="button"
+                  onClick={onOpenHolidayBundle}
+                  className="bg-white/10 hover:bg-white/15 border border-[#d9a520]/50 hover:border-[#d9a520] text-[#f4d378] px-6 py-4.5 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 active:scale-95 cursor-pointer"
+                >
+                  Holiday 3-Pack Bundle ($39.99)
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -425,7 +436,7 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, o
                 Support Local Agriculture
               </div>
               <h2 className="text-4xl md:text-5xl font-serif-modern font-black text-forest italic leading-none tracking-tight">
-                Upcoming Events
+                Upcoming Farmers Markets
               </h2>
               <p className="text-stone-500 font-serif-modern italic text-sm">
                 Come taste our micro-batch creamed honeys in person and talk bees with us!
@@ -558,7 +569,7 @@ const Homepage: React.FC<HomepageProps> = ({ setCurrentPage, onInquireProduct, o
           </div>
         </section>
       )}
- 
+
       {/* INTEGRATED MARKET SCHEDULE MODAL */}
       {showFullSchedule && (
         <div className="fixed inset-0 bg-stone-950/70 backdrop-blur-md flex items-center justify-center z-[200] p-6 animate-in fade-in duration-300">

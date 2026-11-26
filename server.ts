@@ -83,13 +83,26 @@ async function startServer() {
       const lineItems: any[] = [];
 
       items.forEach((item: any) => {
-        if (item.id === "hot-honey" || item.id === "hot-honey-single") {
+        if (item.id === "hot-honey-holiday-bundle") {
+          lineItems.push({
+            price_data: {
+              currency: "usd",
+              product_data: {
+                name: "Jessica Farms Hot Honey Holiday Bundle (3-Pack)",
+                description: "Limited-time holiday 3-pack of 12 oz squeeze bottles made with real Ohio wildflower honey, habanero & ghost peppers. Free Shipping included.",
+                images: [`${req.headers.origin}/assets/holiday-hot-honey-bundle.jpg`],
+              },
+              unit_amount: 3999, // $39.99 Holiday Bundle
+            },
+            quantity: item.quantity,
+          });
+        } else if (item.id === "hot-honey" || item.id === "hot-honey-single") {
           lineItems.push({
             price_data: {
               currency: "usd",
               product_data: {
                 name: "Jessica Farms Hot Honey",
-                description: "Made with real honey, habanero & ghost peppers. Sweet heat with a serious kick.",
+                description: "12 oz jar — made with real honey, habanero & ghost peppers. Sweet heat with a serious kick.",
                 images: [`${req.headers.origin}/assets/hot-honey.jpg`],
               },
               unit_amount: 1400, // $14.00
@@ -117,6 +130,10 @@ async function startServer() {
         }
       });
 
+      const hasHolidayBundle = Array.isArray(items) && items.some(
+        (item: any) => item.id === "hot-honey-holiday-bundle" && Number(item.quantity) > 0
+      );
+
       const session = await stripeClient.checkout.sessions.create({
         payment_method_types: ["card"],
         line_items: lineItems,
@@ -136,10 +153,12 @@ async function startServer() {
             shipping_rate_data: {
               type: "fixed_amount",
               fixed_amount: {
-                amount: 999, // $9.99 flat rate shipping
+                amount: hasHolidayBundle ? 0 : 999, // Free shipping with Hot Honey Holiday Bundle, otherwise $9.99 flat rate
                 currency: "usd",
               },
-              display_name: "Standard Flat Rate Shipping",
+              display_name: hasHolidayBundle
+                ? "Free Shipping (Hot Honey Holiday Bundle)"
+                : "Standard Flat Rate Shipping",
               delivery_estimate: {
                 minimum: { unit: "business_day", value: 3 },
                 maximum: { unit: "business_day", value: 7 },
@@ -343,12 +362,10 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
-    app.get("/{*splat}", (req, res) => {
+    app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
-
-
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);

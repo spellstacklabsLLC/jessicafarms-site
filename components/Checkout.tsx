@@ -16,7 +16,10 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
 
   const subtotal = items.reduce((sum, item) => sum + (item.priceNumber * item.quantity), 0);
   const hasItems = totalBoxes > 0;
-  const SHIPPING_FEE = hasItems ? 9.99 : 0.00;
+  const hasFreeShippingBundle = items.some(
+    (item) => item.id === 'hot-honey-holiday-bundle' && item.quantity > 0
+  );
+  const SHIPPING_FEE = hasItems && !hasFreeShippingBundle ? 9.99 : 0.00;
   const total = subtotal + SHIPPING_FEE;
 
   const handleStripeCheckout = async (e: React.FormEvent) => {
@@ -94,7 +97,11 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
                   <div>
                     <h4 className="font-black text-sm text-forest uppercase tracking-tight">{item.name}</h4>
                     <p className="text-[10px] text-amber-600 font-sans uppercase tracking-wider font-extrabold mt-0.5">
-                      {item.id.includes('hot-honey') || item.priceNumber === 14 ? 'Hot Honey • $14.00' : 'Creamed Honey • $10.00'}
+                      {item.id === 'hot-honey-holiday-bundle'
+                        ? 'Holiday 3-Bottle Bundle • $39.99 • Free Shipping'
+                        : item.id.includes('hot-honey') || item.priceNumber === 14
+                        ? '12 oz Jar • Hot Honey • $14.00'
+                        : 'Creamed Honey • $10.00'}
                     </p>
                     
                     {/* Quantity adjustments */}
@@ -122,7 +129,9 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
                 <div className="text-right">
                   <span className="font-sans text-[9px] font-black uppercase text-stone-300 block tracking-widest leading-none">Selected</span>
                   <span className="font-serif-modern text-xs text-stone-600 font-black italic block mt-1">
-                    {item.quantity} Jar{item.quantity > 1 ? 's' : ''}
+                    {item.id === 'hot-honey-holiday-bundle'
+                      ? `${item.quantity} Bundle${item.quantity > 1 ? 's' : ''} (${item.quantity * 3} Bottles)`
+                      : `${item.quantity} Jar${item.quantity > 1 ? 's' : ''}`}
                   </span>
                 </div>
               </div>
@@ -150,8 +159,16 @@ const Checkout: React.FC<CheckoutProps> = ({ items, onSuccess, onBack, onUpdateQ
             </div>
 
             <div className="flex justify-between items-center text-sm">
-              <span className="font-serif-modern italic text-stone-500">Shipping (Flat Rate)</span>
-              <span className="font-black text-forest">${SHIPPING_FEE.toFixed(2)}</span>
+              <span className="font-serif-modern italic text-stone-500">
+                {hasFreeShippingBundle ? 'Shipping (Holiday Bundle)' : 'Shipping (Flat Rate)'}
+              </span>
+              {hasFreeShippingBundle ? (
+                <span className="font-black text-emerald-700 uppercase tracking-wider text-xs bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+                  FREE
+                </span>
+              ) : (
+                <span className="font-black text-forest">${SHIPPING_FEE.toFixed(2)}</span>
+              )}
             </div>
 
             <div className="pt-4 mt-2 border-t-2 border-forest/10 flex justify-between items-center text-2xl">

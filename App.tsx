@@ -1,14 +1,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Page, Product, CartItem } from './types';
-import { PRODUCTS, INTRO_VIDEO, CONFIG, COMING_SOON_PRODUCTS, HOT_HONEY_PRODUCT } from './constants';
+import { PRODUCTS, INTRO_VIDEO, CONFIG, COMING_SOON_PRODUCTS, HOT_HONEY_PRODUCT, HOT_HONEY_HOLIDAY_BUNDLE } from './constants';
 import GamesSection from './components/Games';
 import Checkout from './components/Checkout';
 import InquiryModal from './components/InquiryModal';
 import ContactSection from './components/ContactSection';
 import Homepage from './components/Homepage';
 import WholesaleOrder from './components/WholesaleOrder';
-import { ShoppingCart, ShoppingBag, ChevronDown, Trash2, Volume2, Flame, Sparkles, ShieldCheck, Plus, Minus, ArrowRight, Check } from 'lucide-react';
+import HolidayPromoModal from './components/HolidayPromoModal';
+import { ShoppingCart, ShoppingBag, ChevronDown, Trash2, Volume2, Flame, Sparkles, ShieldCheck, Plus, Minus, ArrowRight, Check, Truck } from 'lucide-react';
 
 const BeeItem: React.FC<{ scale: number }> = ({ scale }) => {
   const [pos, setPos] = useState({ x: Math.random() * 80 + 10, y: Math.random() * 80 + 10 });
@@ -397,6 +398,25 @@ const App: React.FC = () => {
 
   // Hot Honey Market Stand state
   const [hotHoneyQty, setHotHoneyQty] = useState(1);
+  const [holidayBundleQty, setHolidayBundleQty] = useState(1);
+
+  // Christmas Hot Honey Holiday Bundle Promotional Pop-up state
+  const [showHolidayPromo, setShowHolidayPromo] = useState(false);
+  const [holidayPromoDismissed, setHolidayPromoDismissed] = useState(false);
+
+  useEffect(() => {
+    if (
+      currentPage === Page.Home &&
+      !holidayPromoDismissed &&
+      !orderComplete &&
+      !orderCanceled
+    ) {
+      const timer = setTimeout(() => {
+        setShowHolidayPromo(true);
+      }, 650);
+      return () => clearTimeout(timer);
+    }
+  }, [currentPage, holidayPromoDismissed, orderComplete, orderCanceled]);
 
   // TV warmup timer that handles initial load and manual toggle-on cycles
   useEffect(() => {
@@ -577,6 +597,21 @@ const App: React.FC = () => {
       
       <InquiryModal product={activeInquiry} onClose={() => setActiveInquiry(null)} />
 
+      <HolidayPromoModal
+        isOpen={showHolidayPromo && currentPage === Page.Home}
+        onClose={() => {
+          setShowHolidayPromo(false);
+          setHolidayPromoDismissed(true);
+        }}
+        onClaimBundle={(bundleProduct, quantity) => {
+          addToCart(bundleProduct, quantity);
+          setShowHolidayPromo(false);
+          setHolidayPromoDismissed(true);
+          setCurrentPage(Page.Checkout);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+      />
+
       {/* STRIPE NOTIFICATIONS */}
       {orderComplete && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] w-full max-w-md px-6 animate-in slide-in-from-top-10 duration-500">
@@ -674,6 +709,7 @@ const App: React.FC = () => {
             <Homepage 
               setCurrentPage={setCurrentPage} 
               onInquireProduct={(product) => setActiveInquiry(product)} 
+              onOpenHolidayBundle={() => setShowHolidayPromo(true)}
               onShopHotHoney={() => {
                 setCurrentPage(Page.Shop);
                 setTimeout(() => {
@@ -1223,7 +1259,7 @@ const App: React.FC = () => {
                           alt="Jessica Farms Creamed Honey" 
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter brightness-105 contrast-105 saturate-110"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'https://picsum.photos/seed/honeyjar/400/300';
+                            (e.target as HTMLImageElement).src = 'assets/hothoneypromo2.jpg';
                           }}
                         />
                         <div className="absolute top-3 left-3 bg-[#d9a520] text-[#1a4332] text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-md">
@@ -1266,6 +1302,147 @@ const App: React.FC = () => {
                     <p className="text-stone-500 font-serif-modern italic text-xs mt-1">Select our small-batch honeys below — artisanal creamed honey and spicy hot honey</p>
                   </div>
 
+                  {/* HOT HONEY HOLIDAY BUNDLE (3-PACK) SEASONAL FEATURE ($39.99 + FREE SHIPPING) */}
+                  <div
+                    id="marketstand-holiday-bundle"
+                    className="relative overflow-hidden bg-gradient-to-br from-[#0b2318] via-[#091c14] to-[#1a0a0d] text-[#fdfcf8] rounded-[2.5rem] border-2 border-[#d9a520]/65 shadow-2xl p-6 md:p-8 lg:p-10 transition-all duration-300 group"
+                  >
+                    {/* Festive Ambient Glows */}
+                    <div className="absolute -right-16 -top-16 w-80 h-80 bg-[#d9a520]/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="absolute -left-16 -bottom-16 w-80 h-80 bg-red-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+                      {/* Left: 3-Pack Holiday Bundle Photo */}
+                      <div className="lg:col-span-5 flex justify-center">
+                        <div className="relative w-full max-w-[360px] aspect-[4/3] rounded-[2.2rem] overflow-hidden border-2 border-[#d9a520]/60 shadow-[0_20px_45px_rgba(0,0,0,0.7)] bg-[#0d1912] group-hover:border-[#d9a520] transition-all duration-500">
+                          <img
+                            src={HOT_HONEY_HOLIDAY_BUNDLE.imageUrl}
+                            alt="Three Jessica Farms Hot Honey 12 oz squeeze bottles Holiday Bundle"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter brightness-105 contrast-105"
+                            referrerPolicy="no-referrer"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/assets/hot-honey.jpg';
+                            }}
+                          />
+                          <div className="absolute top-3.5 left-3.5 z-20">
+                            <span className="inline-flex items-center gap-1.5 bg-[#c40f25] text-[#fdfcf8] border border-[#f4d378]/50 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+                              <Sparkles className="w-3.5 h-3.5 text-[#f4d378]" />
+                              Limited Holiday 3-Pack
+                            </span>
+                          </div>
+                          <div className="absolute bottom-3.5 right-3.5 z-20">
+                            <span className="bg-black/80 backdrop-blur-md text-[#f4d378] border border-[#d9a520]/45 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
+                              3 × 12 oz Bottles
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right: Offer Details, Price, Free Shipping & Add to Cart */}
+                      <div className="lg:col-span-7 space-y-5 text-left">
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#d9a520]/20 text-[#f4d378] border border-[#d9a520]/40 rounded-full text-[10px] font-black uppercase tracking-[0.22em]">
+                            <Flame className="w-3 h-3 text-red-400" />
+                            Holiday Bundle Special
+                          </div>
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/15 text-emerald-300 border border-emerald-400/35 rounded-full text-[10px] font-black uppercase tracking-widest">
+                            <Truck className="w-3.5 h-3.5 text-emerald-300" />
+                            Free U.S. Shipping
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <h4 className="text-3xl md:text-4xl lg:text-5xl font-serif-modern font-black italic tracking-tight text-[#fdfcf8] leading-tight">
+                            Hot Honey Holiday Bundle (3-Pack)
+                          </h4>
+                          <p className="text-stone-300 text-sm md:text-base font-serif-modern italic leading-relaxed">
+                            Three full-size 12 oz squeeze bottles (36 oz total) of pure Ohio wildflower honey infused with habanero &amp; ghost peppers. Ships free anywhere in the U.S.
+                          </p>
+                        </div>
+
+                        {/* Price & Quantity Selector */}
+                        <div className="bg-white/5 border border-[#d9a520]/35 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+                          <div>
+                            <div className="flex items-baseline gap-2.5">
+                              <span className="text-4xl font-serif-modern font-black text-[#f4d378] italic leading-none">
+                                $39.99
+                              </span>
+                              <span className="text-xs text-stone-300 uppercase font-sans font-bold tracking-wider">
+                                / 3-pack
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+                              <span className="text-[11px] font-bold text-emerald-300 inline-flex items-center gap-1">
+                                <Truck className="w-3.5 h-3.5" />
+                                $0.00 Free Shipping
+                              </span>
+                              <span className="text-[10px] text-stone-400 font-serif-modern italic">
+                                Subtotal: ${(holidayBundleQty * HOT_HONEY_HOLIDAY_BUNDLE.priceNumber).toFixed(2)} USD
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Quantity Stepper */}
+                          <div className="flex items-center gap-2 bg-stone-900/80 border border-stone-700/80 rounded-xl p-1">
+                            <span className="text-[10px] font-black uppercase tracking-wider text-stone-400 px-2 select-none">Qty:</span>
+                            <button
+                              type="button"
+                              onClick={() => setHolidayBundleQty(q => Math.max(1, q - 1))}
+                              className="w-7 h-7 rounded-lg bg-stone-800 hover:bg-stone-700 active:scale-95 text-[#d9a520] font-black flex items-center justify-center transition-all cursor-pointer select-none"
+                              aria-label="Decrease holiday bundle quantity"
+                            >
+                              <Minus className="w-3.5 h-3.5" />
+                            </button>
+                            <span className="w-6 text-center font-mono font-bold text-sm text-[#fdfcf8]">
+                              {holidayBundleQty}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setHolidayBundleQty(q => Math.min(10, q + 1))}
+                              className="w-7 h-7 rounded-lg bg-stone-800 hover:bg-stone-700 active:scale-95 text-[#d9a520] font-black flex items-center justify-center transition-all cursor-pointer select-none"
+                              aria-label="Increase holiday bundle quantity"
+                            >
+                              <Plus className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* CTA Buttons */}
+                        <div className="pt-1 flex flex-wrap items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => addToCart(HOT_HONEY_HOLIDAY_BUNDLE, holidayBundleQty)}
+                            className="w-full sm:w-auto py-4 px-8 rounded-2xl text-xs font-black uppercase tracking-widest bg-[#d9a520] hover:bg-[#c4951b] active:scale-95 text-[#1a4332] hover:shadow-[0_10px_30px_rgba(217,165,32,0.35)] transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-xl"
+                          >
+                            <ShoppingCart className="w-4 h-4" />
+                            <span>Add Bundle to Cart • ${(holidayBundleQty * HOT_HONEY_HOLIDAY_BUNDLE.priceNumber).toFixed(2)}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              addToCart(HOT_HONEY_HOLIDAY_BUNDLE, holidayBundleQty);
+                              setCurrentPage(Page.Checkout);
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            className="w-full sm:w-auto py-4 px-7 rounded-2xl text-xs font-black uppercase tracking-widest bg-[#c40f25] hover:bg-[#a60b1d] active:scale-95 text-white border border-[#f4d378]/40 transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-xl"
+                          >
+                            <span>Buy Now</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        {/* Security & Farm Guarantee Notice */}
+                        <div className="pt-2 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-[10px] text-stone-400 font-serif-modern italic">
+                          <div className="flex items-center gap-1.5">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Encrypted 256-bit checkout processed safely by Stripe • Free Shipping applied automatically</span>
+                          </div>
+                          <span className="text-[#d9a520]/80">Norton, OH Apiary</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* HOT HONEY ARTISAN STANDOUT SECTION ($14) */}
                   <div 
                     id="marketstand-hot-honey" 
@@ -1296,7 +1473,7 @@ const App: React.FC = () => {
                           </div>
                           <div className="absolute bottom-4 right-4 z-20">
                             <span className="bg-black/80 backdrop-blur-md text-[#d9a520] border border-[#d9a520]/40 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg">
-                              5 oz Glass Jar
+                              12 oz Jar
                             </span>
                           </div>
                         </div>
